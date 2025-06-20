@@ -1,4 +1,4 @@
-/* eslint-disable jest/no-test-callback */
+import { EventEmitter } from 'events';
 import {
   logkitty,
   AndroidPriority,
@@ -9,7 +9,6 @@ import {
 } from '../api';
 import { runAndroidLoggingProcess, getApplicationPid } from '../android/adb';
 import { runSimulatorLoggingProcess } from '../ios/simulator';
-import { EventEmitter } from 'events';
 import { Entry } from '../types';
 import {
   ANDROID_PARSED_LOG_FIXTURES,

@@ -1,7 +1,11 @@
 {
-  "name": "logkitty",
-  "version": "0.7.0",
+  "name": "@wix/logkitty",
+  "version": "1.0.0",
   "description": "Display pretty Android and iOS logs without Android Studio or Console.app, with intuitive Command Line Interface.",
+  "packageManager": "yarn@4.9.2",
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "logcat",
     "cli",
@@ -16,13 +20,16 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/zamotany/logkitty.git"
+    "url": "https://github.com/wix-incubator/logkitty.git"
   },
   "author": "Paweł Trysła <zamotany.oss@gmail.com>",
+  "contributors": [
+    "Yaroslav Serhieiev <noomorph@gmail.com>"
+  ],
   "bugs": {
-    "url": "https://github.com/zamotany/logkitty/issues"
+    "url": "https://github.com/wix-incubator/logkitty/issues"
   },
-  "homepage": "https://github.com/zamotany/logkitty",
+  "homepage": "https://github.com/wix-incubator/logkitty",
   "license": "MIT",
   "bin": "bin/logkitty.js",
   "main": "build/api.js",
@@ -42,26 +49,44 @@
   "dependencies": {
     "ansi-fragments": "^0.2.1",
     "dayjs": "^1.8.22",
-    "yargs": "^15.3.0"
+    "yargs": "^15.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.8.7",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/preset-env": "^7.8.7",
-    "@babel/preset-typescript": "^7.8.3",
-    "@callstack/eslint-config": "^9.1.0",
-    "@types/jest": "^25.1.4",
-    "@types/node": "^13.9.1",
-    "@types/yargs": "^15.0.4",
-    "@typescript-eslint/eslint-plugin": "^2.23.0",
-    "@typescript-eslint/parser": "^2.23.0",
-    "babel-jest": "^25.1.0",
-    "eslint": "^6.8.0",
-    "jest": "^25.1.0",
-    "typescript": "^3.8.3"
+    "@babel/cli": "^7.24.0",
+    "@babel/core": "^7.24.0",
+    "@babel/plugin-proposal-class-properties": "^7.18.0",
+    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-typescript": "^7.24.0",
+    "@callstack/eslint-config": "^13.0.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.0.0",
+    "@types/yargs": "^15.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "babel-jest": "^30.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jest": "^27.0.0",
+    "jest": "^30.0.0",
+    "semantic-release": "^22.0.5",
+    "typescript": "~5.1.0"
   },
   "jest": {
     "testRegex": "/__tests__/.*\\.(test|spec)\\.ts?$"
+  },
+  "release": {
+    "branches": [
+      "master"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/git",
+      "@semantic-release/github"
+    ]
   }
 }

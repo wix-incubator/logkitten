@@ -3,14 +3,15 @@
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2015",
-    "lib": ["es2016"],
+    "target": "es2022",
+    "lib": ["es2022"],
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "build",
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
+    "skipLibCheck": true,
     "typeRoots": ["node_modules/@types", "typings"]
   },
   "include": [

@@ -93,7 +93,7 @@ const {
   },
 } = yargs
   .usage('Usage: $0 [options] <platform>')
-  .command('android', 'Android', yargs =>
+  .command('android', 'Android', (yargs) =>
     yargs
       .command(
         'tag <tags ...>',
@@ -146,7 +146,7 @@ const {
         'Silence all logs and show only ones with MyTag with priority DEBUG and above'
       )
   )
-  .command('ios <filter>', 'iOS', yargs =>
+  .command('ios <filter>', 'iOS', (yargs) =>
     yargs
       .command(
         'tag <tags ...>',

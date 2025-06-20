@@ -23,40 +23,38 @@ export default class AndroidParser implements IParser {
 
   parseMessages(messages: string[]): Entry[] {
     return messages
-      .map(
-        (rawMessage: string): Entry => {
-          const timeMatch = rawMessage.match(AndroidParser.timeRegex);
-          if (!timeMatch) {
-            throw new Error(
-              `Time regex was not matched in message: ${rawMessage}`
-            );
-          }
-
-          const headerMatch = rawMessage
-            .slice(timeMatch[0].length)
-            .match(AndroidParser.headerRegex) || ['', 'U', 'unknown', '-1'];
-
-          const [, priority, tag, pid] = headerMatch;
-          return {
-            platform: 'android',
-            date: DayJS()
-              .set('month', parseInt(timeMatch[1], 10))
-              .set('day', parseInt(timeMatch[2], 10))
-              .set('hour', parseInt(timeMatch[3], 10))
-              .set('minute', parseInt(timeMatch[4], 10))
-              .set('second', parseInt(timeMatch[5], 10))
-              .set('millisecond', 0),
-            pid: parseInt(pid.trim(), 10) || 0,
-            priority: Priority.fromLetter(priority),
-            tag: tag.trim() || 'unknown',
-            messages: [
-              rawMessage
-                .slice(timeMatch[0].length + headerMatch[0].length)
-                .trim(),
-            ],
-          };
+      .map((rawMessage: string): Entry => {
+        const timeMatch = rawMessage.match(AndroidParser.timeRegex);
+        if (!timeMatch) {
+          throw new Error(
+            `Time regex was not matched in message: ${rawMessage}`
+          );
         }
-      )
+
+        const headerMatch = rawMessage
+          .slice(timeMatch[0].length)
+          .match(AndroidParser.headerRegex) || ['', 'U', 'unknown', '-1'];
+
+        const [, priority, tag, pid] = headerMatch;
+        return {
+          platform: 'android',
+          date: DayJS()
+            .set('month', parseInt(timeMatch[1], 10))
+            .set('day', parseInt(timeMatch[2], 10))
+            .set('hour', parseInt(timeMatch[3], 10))
+            .set('minute', parseInt(timeMatch[4], 10))
+            .set('second', parseInt(timeMatch[5], 10))
+            .set('millisecond', 0),
+          pid: parseInt(pid.trim(), 10) || 0,
+          priority: Priority.fromLetter(priority),
+          tag: tag.trim() || 'unknown',
+          messages: [
+            rawMessage
+              .slice(timeMatch[0].length + headerMatch[0].length)
+              .trim(),
+          ],
+        };
+      })
       .reduce((acc: Entry[], entry: Entry) => {
         if (
           acc.length > 0 &&

@@ -1,3 +1,7 @@
 {
-  "extends": "@callstack/eslint-config/node"
+  "extends": "@callstack/eslint-config/node",
+  "rules": {
+    "jest/no-done-callback": "off",
+    "jest/no-conditional-expect": "off"
+  }
 }

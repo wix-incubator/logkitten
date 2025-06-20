@@ -84,7 +84,7 @@ export function logkitty(options: LogkittyOptions): EventEmitter {
 
   if (
     !['ios', 'android'].some(
-      availablePlatform => availablePlatform === platform
+      (availablePlatform) => availablePlatform === platform
     )
   ) {
     throw new Error(`Platform ${platform} is not supported`);
@@ -112,17 +112,26 @@ export function logkitty(options: LogkittyOptions): EventEmitter {
   });
 
   loggingProcess.stderr?.on('data', (errorData: string | Buffer) => {
-    if (
-      platform === 'ios' &&
-      errorData.toString().includes('No devices are booted.')
-    ) {
-      emitter.emit(
-        'error',
-        new CodeError(ERR_IOS_NO_SIMULATORS_BOOTED, 'No simulators are booted.')
-      );
-    } else {
-      emitter.emit('error', new Error(errorData.toString()));
+    if (platform === 'ios') {
+      const msg = errorData.toString();
+
+      if (msg.includes('getpwuid_r did not find a match for uid')) {
+        return;
+      }
+
+      if (msg.includes('No devices are booted.')) {
+        emitter.emit(
+          'error',
+          new CodeError(
+            ERR_IOS_NO_SIMULATORS_BOOTED,
+            'No simulators are booted.'
+          )
+        );
+        return;
+      }
     }
+
+    emitter.emit('error', new Error(errorData.toString()));
   });
 
   loggingProcess.stdout?.on('data', (raw: string | Buffer) => {

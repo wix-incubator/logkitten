@@ -1,4 +1,4 @@
-# logkitty
+# @wix/logkitty
 
 [![Version][version]][package]
 
@@ -9,18 +9,20 @@
 
 Display __pretty__ Android and iOS logs __without Android Studio or Console.app__,  with __intuitive__ Command Line Interface.
 
+> This is a Wix fork of the original [logkitty](https://github.com/zamotany/logkitty) project.
+
 ![Demo](./logkitty.gif)
 
 ## Installation
 
 ```sh
-yarn global add logkitty
+yarn global add @wix/logkitty
 ```
 
 Or if you prefer having it locally:
 
 ```sh
-yarn add -D logkitty
+yarn add -D @wix/logkitty
 yarn logkitty --help
 ```
 
@@ -122,14 +124,14 @@ If your building a tool and want to use Node API, head over to [Node API documen
 
 <!-- badges (common) -->
 
-[license-badge]: https://img.shields.io/npm/l/logkitty.svg?style=flat-square
+[license-badge]: https://img.shields.io/npm/l/@wix/logkitty.svg?style=flat-square
 [license]: https://opensource.org/licenses/MIT
 [prs-welcome-badge]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square
 [prs-welcome]: http://makeapullrequest.com
 [coc-badge]: https://img.shields.io/badge/code%20of-conduct-ff69b4.svg?style=flat-square
-[coc]: https://github.com/zamotany/logkitty/blob/master/CODE_OF_CONDUCT.md
+[coc]: https://github.com/wix-incubator/logkitty/blob/master/CODE_OF_CONDUCT.md
 [chat-badge]: https://img.shields.io/badge/chat-discord-brightgreen.svg?style=flat-square&colorB=7289DA&logo=discord
 [chat]: https://discord.gg/zwR2Cdh
 
-[version]: https://img.shields.io/npm/v/logkitty.svg?style=flat-square
-[package]: https://www.npmjs.com/package/logkitty
+[version]: https://img.shields.io/npm/v/@wix/logkitty.svg?style=flat-square
+[package]: https://www.npmjs.com/package/@wix/logkitty
