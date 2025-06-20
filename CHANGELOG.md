@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/wix-incubator/logkitten/compare/v1.0.0...v1.0.1) (2025-06-20)
+
+
+### Bug Fixes
+
+* repository name ([eb5c127](https://github.com/wix-incubator/logkitten/commit/eb5c1275bc2601de3e1433693a8d31323b19c529))
+
 # 1.0.0 (2025-06-20)
 
 

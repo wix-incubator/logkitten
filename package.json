@@ -1,6 +1,6 @@
 {
   "name": "logkitten",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Display pretty Android and iOS logs without Android Studio or Console.app, with intuitive Command Line Interface.",
   "packageManager": "yarn@4.9.2",
   "publishConfig": {
