@@ -50,7 +50,7 @@ emitter.on('error', (error: Error) => {
 
 ## API Reference
 
-### `logkitten(options: LogkittyOptions): EventEmitter`
+### `logkitten(options: LogkittenOptions): EventEmitter`
 
 Spawns logkitten with given options:
 

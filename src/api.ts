@@ -18,7 +18,7 @@ export { Priority as IosPriority } from './ios/constants';
 /* Exports */
 export { Entry } from './types';
 
-export type LogkittyOptions = {
+export type LogkittenOptions = {
   platform: Platform;
   adbPath?: string;
   deviceId?: string;
@@ -26,7 +26,7 @@ export type LogkittyOptions = {
   filter?: (entry: Entry) => boolean;
 };
 
-export function logkitten(options: LogkittyOptions): EventEmitter {
+export function logkitten(options: LogkittenOptions): EventEmitter {
   const { platform, adbPath, deviceId, priority, filter: userFilter } = options;
   const emitter = new EventEmitter();
 
