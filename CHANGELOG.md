@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/wix-incubator/logkitten/compare/v1.0.1...v1.0.2) (2025-06-20)
+
+
+### Bug Fixes
+
+* remove redundant scope ([5d05a6a](https://github.com/wix-incubator/logkitten/commit/5d05a6a8e9df4d9de4556d842138fc8a25d5f20e))
+
 ## [1.0.1](https://github.com/wix-incubator/logkitten/compare/v1.0.0...v1.0.1) (2025-06-20)
 
 
