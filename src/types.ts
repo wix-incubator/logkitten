@@ -12,11 +12,9 @@ export type Entry = {
   platform: Platform;
 };
 
-export interface IParser {
+export interface Parser {
   splitMessages(data: string): string[];
   parseMessages(messages: string[]): Entry[];
 }
 
-export interface IFilter {
-  shouldInclude(entry: Entry): boolean;
-}
+export type Filter = (entry: Entry) => boolean;

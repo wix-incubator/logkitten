@@ -1,14 +1,13 @@
 {
   "name": "logkitten",
   "version": "1.0.1",
-  "description": "Display pretty Android and iOS logs without Android Studio or Console.app, with intuitive Command Line Interface.",
+  "description": "Stream Android and iOS logs without Android Studio or Console.app, with programmatic Node.js API for log analysis.",
   "packageManager": "yarn@4.9.2",
   "publishConfig": {
     "access": "public"
   },
   "keywords": [
     "logcat",
-    "cli",
     "android",
     "android studio",
     "ios",
@@ -16,7 +15,9 @@
     "console",
     "log",
     "logs",
-    "logging"
+    "logging",
+    "api",
+    "node"
   ],
   "repository": {
     "type": "git",
@@ -31,11 +32,8 @@
   },
   "homepage": "https://github.com/wix-incubator/logkitten",
   "license": "MIT",
-  "bin": "bin/logkitten.js",
   "main": "build/api.js",
   "files": [
-    "docs",
-    "bin",
     "build"
   ],
   "scripts": {
@@ -47,9 +45,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "ansi-fragments": "^0.2.1",
-    "dayjs": "^1.8.22",
-    "yargs": "^15.0.0"
+    "dayjs": "^1.8.22"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.0",
@@ -62,7 +58,6 @@
     "@semantic-release/git": "^10.0.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
-    "@types/yargs": "^15.0.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "babel-jest": "^30.0.0",

@@ -1,8 +1,8 @@
 import DayJS from 'dayjs';
-import { IParser, Entry } from '../types';
+import { Parser, Entry } from '../types';
 import { Priority } from './constants';
 
-export default class AndroidParser implements IParser {
+export default class AndroidParser implements Parser {
   static timeRegex: RegExp = /(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}).\d{3}/m;
   static headerRegex: RegExp = /^\s*(\w)\/(.+)\(([\s\d]+)\):/;
 

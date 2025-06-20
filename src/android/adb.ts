@@ -2,8 +2,6 @@ import { spawn, execFileSync, ChildProcess } from 'child_process';
 import path from 'path';
 import {
   CodeError,
-  ERR_ANDROID_UNPROCESSABLE_PID,
-  ERR_ANDROID_CANNOT_GET_APP_PID,
   ERR_ANDROID_CANNOT_CLEAN_LOGCAT_BUFFER,
   ERR_ANDROID_CANNOT_START_LOGCAT,
 } from '../errors';
@@ -45,31 +43,4 @@ export function spawnLogcatProcess(adbPath: string): ChildProcess {
       (error as Error).message
     );
   }
-}
-
-export function getApplicationPid(
-  applicationId: string,
-  adbPath?: string
-): number {
-  let output: Buffer | String | undefined;
-  try {
-    output = execFileSync(getAdbPath(adbPath), [
-      'shell',
-      'pidof',
-      '-s',
-      applicationId,
-    ]);
-  } catch (error) {
-    throw new CodeError(
-      ERR_ANDROID_CANNOT_GET_APP_PID,
-      (error as Error).message
-    );
-  }
-
-  const pid = output ? parseInt(output.toString(), 10) : NaN;
-  if (isNaN(pid)) {
-    throw new CodeError(ERR_ANDROID_UNPROCESSABLE_PID);
-  }
-
-  return pid;
 }

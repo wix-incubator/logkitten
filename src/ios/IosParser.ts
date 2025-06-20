@@ -1,8 +1,8 @@
 import DayJS from 'dayjs';
-import { IParser, Entry } from '../types';
+import { Parser, Entry } from '../types';
 import { Priority, PriorityNames } from './constants';
 
-export default class IosParser implements IParser {
+export default class IosParser implements Parser {
   static timeRegex: RegExp = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.[\d+]+/m;
   static headerRegex: RegExp =
     /^\s+[a-z0-9]+\s+(\w+)\s+[a-z0-9]+\s+(\d+)\s+\d+\s+([^:]+):/;

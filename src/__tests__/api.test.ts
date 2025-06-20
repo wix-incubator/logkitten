@@ -1,13 +1,6 @@
 import { EventEmitter } from 'events';
-import {
-  logkitten,
-  AndroidPriority,
-  makeTagsFilter,
-  makeMatchFilter,
-  makeCustomFilter,
-  makeAppFilter,
-} from '../api';
-import { runAndroidLoggingProcess, getApplicationPid } from '../android/adb';
+import { logkitten, AndroidPriority } from '../api';
+import { runAndroidLoggingProcess } from '../android/adb';
 import { runSimulatorLoggingProcess } from '../ios/simulator';
 import { Entry } from '../types';
 import {
@@ -21,7 +14,6 @@ import {
 
 jest.mock('../android/adb.ts', () => ({
   runAndroidLoggingProcess: jest.fn(),
-  getApplicationPid: jest.fn(),
 }));
 
 jest.mock('../ios/simulator.ts', () => ({
@@ -72,43 +64,7 @@ describe('Node API', () => {
         });
       });
 
-      it('when app filter used', (done: Function) => {
-        let entriesEmitted = 0;
-        const loggingEmitter = new EventEmitter();
-        (runAndroidLoggingProcess as jest.Mock).mockImplementationOnce(() => ({
-          stdout: loggingEmitter,
-          stderr: new EventEmitter(),
-        }));
-        (getApplicationPid as jest.Mock).mockImplementationOnce(
-          (appId: string) => {
-            return appId === 'com.example.app'
-              ? ANDROID_PARSED_LOG_FIXTURES[1].pid
-              : -1;
-          }
-        );
-
-        const emitter = logkitten({
-          platform: 'android',
-          priority: AndroidPriority.INFO,
-          filter: makeAppFilter('com.example.app'),
-        });
-
-        emitter.on('entry', (entry: Entry) => {
-          expect(entry).toEqual(ANDROID_PARSED_LOG_FIXTURES[1]);
-          entriesEmitted += 1;
-        });
-
-        ANDROID_RAW_LOG_FIXTURES.forEach((data: string) => {
-          loggingEmitter.emit('data', data);
-        });
-
-        setTimeout(() => {
-          expect(entriesEmitted).toBe(1);
-          done();
-        });
-      });
-
-      it('when tag filter used', (done: Function) => {
+      it('when tag filter is used', (done: Function) => {
         let entriesEmitted = 0;
         const loggingEmitter = new EventEmitter();
         (runAndroidLoggingProcess as jest.Mock).mockImplementationOnce(() => ({
@@ -119,7 +75,8 @@ describe('Node API', () => {
         const emitter = logkitten({
           platform: 'android',
           priority: AndroidPriority.VERBOSE,
-          filter: makeTagsFilter('wificond', 'storaged'),
+          filter: (entry) =>
+            entry.tag === 'wificond' || entry.tag === 'storaged',
         });
 
         emitter.on('entry', (entry: Entry) => {
@@ -150,7 +107,7 @@ describe('Node API', () => {
         });
       });
 
-      it('when match filter used', (done: Function) => {
+      it('when message filter is used', (done: Function) => {
         let entriesEmitted = 0;
         const loggingEmitter = new EventEmitter();
         (runAndroidLoggingProcess as jest.Mock).mockImplementationOnce(() => ({
@@ -161,7 +118,7 @@ describe('Node API', () => {
         const emitter = logkitten({
           platform: 'android',
           priority: AndroidPriority.VERBOSE,
-          filter: makeMatchFilter(/scan/),
+          filter: (entry) => entry.messages.some((msg) => /scan/.test(msg)),
         });
 
         emitter.on('entry', (entry: Entry) => {
@@ -185,35 +142,6 @@ describe('Node API', () => {
 
         setTimeout(() => {
           expect(entriesEmitted).toBe(2);
-          done();
-        });
-      });
-
-      it('when custom filter used', (done: Function) => {
-        let entriesEmitted = 0;
-        const loggingEmitter = new EventEmitter();
-        (runAndroidLoggingProcess as jest.Mock).mockImplementationOnce(() => ({
-          stdout: loggingEmitter,
-          stderr: new EventEmitter(),
-        }));
-
-        const emitter = logkitten({
-          platform: 'android',
-          priority: AndroidPriority.VERBOSE,
-          filter: makeCustomFilter('*:S', 'storaged:I'),
-        });
-
-        emitter.on('entry', (entry: Entry) => {
-          expect(entry).toEqual(ANDROID_PARSED_LOG_FIXTURES[0]);
-          entriesEmitted += 1;
-        });
-
-        ANDROID_RAW_LOG_FIXTURES.forEach((data: string) => {
-          loggingEmitter.emit('data', data);
-        });
-
-        setTimeout(() => {
-          expect(entriesEmitted).toBe(1);
           done();
         });
       });
@@ -263,7 +191,7 @@ describe('Node API', () => {
 
         const emitter = logkitten({
           platform: 'ios',
-          filter: makeTagsFilter('testApp1'),
+          filter: (entry) => entry.tag === 'testApp1',
         });
 
         emitter.on('entry', (entry: Entry) => {
@@ -281,7 +209,7 @@ describe('Node API', () => {
         }, 0);
       });
 
-      it('when match filter used', (done: Function) => {
+      it('when message filter is used', (done: Function) => {
         let entriesEmitted = 0;
         const loggingEmitter = new EventEmitter();
         (runSimulatorLoggingProcess as jest.Mock).mockImplementationOnce(
@@ -293,7 +221,7 @@ describe('Node API', () => {
 
         const emitter = logkitten({
           platform: 'ios',
-          filter: makeMatchFilter(/test\s/),
+          filter: (entry) => entry.messages.some((msg) => /test\s/.test(msg)),
         });
 
         emitter.on('entry', (entry: Entry) => {
@@ -310,24 +238,6 @@ describe('Node API', () => {
           done();
         }, 0);
       });
-    });
-
-    it('makeAppFilter should throw error', () => {
-      expect(() => {
-        logkitten({
-          platform: 'ios',
-          filter: makeAppFilter('com.example.app'),
-        });
-      }).toThrow('App filter is only available for Android');
-    });
-
-    it('makeCustomFilter should throw error', () => {
-      expect(() => {
-        logkitten({
-          platform: 'ios',
-          filter: makeCustomFilter(''),
-        });
-      }).toThrow('Custom filter is only available for Android');
     });
   });
 
@@ -350,26 +260,7 @@ describe('Node API', () => {
     loggingEmitter.emit('data', null);
   });
 
-  it('should emit error when process emits error', (done: Function) => {
-    const loggingEmitter = new EventEmitter();
-    (runAndroidLoggingProcess as jest.Mock).mockImplementationOnce(() => ({
-      stdout: loggingEmitter,
-      stderr: new EventEmitter(),
-    }));
-
-    const emitter = logkitten({
-      platform: 'android',
-    });
-
-    emitter.on('error', (error: Error) => {
-      expect(error).toBeDefined();
-      done();
-    });
-
-    loggingEmitter.emit('error', new Error());
-  });
-
-  it('should emit error when platform is not supported', () => {
+  it('should throw error when unsupported platform is used', () => {
     expect(() => {
       logkitten({
         platform: 'windows' as any,

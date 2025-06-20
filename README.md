@@ -7,120 +7,242 @@
 [![Chat][chat-badge]][chat]
 [![Code of Conduct][coc-badge]][coc]
 
-Display __pretty__ Android and iOS logs __without Android Studio or Console.app__,  with __intuitive__ Command Line Interface.
+Stream Android and iOS logs without Android Studio or Console.app, with programmatic Node.js API for log analysis.
 
 > This is a Wix fork of the original [logkitten](https://github.com/zamotany/logkitten) project.
-
-![Demo](./logkitten.gif)
 
 ## Installation
 
 ```sh
-yarn global add logkitten
-```
-
-Or if you prefer having it locally:
-
-```sh
-yarn add -D logkitten
-yarn logkitten --help
+npm install logkitten
+# or
+yarn add logkitten
 ```
 
 ## Usage
 
-```sh
-logkitten <platform> <command> [options]
+```ts
+import {
+  logkitten,
+  AndroidPriority,
+  IosPriority,
+  Entry,
+} from 'logkitten';
+
+// Basic usage - get all Android logs
+const emitter = logkitten({
+  platform: 'android',
+  priority: AndroidPriority.DEBUG,
+});
+
+emitter.on('entry', (entry: Entry) => {
+  // Process the structured log entry
+  console.log({
+    timestamp: entry.date.format(),
+    priority: entry.priority,
+    tag: entry.tag,
+    message: entry.messages.join('\n'),
+    platform: entry.platform
+  });
+});
+
+emitter.on('error', (error: Error) => {
+  console.error('Logging error:', error.message);
+});
 ```
 
-### Command line help
+## API Reference
 
-You can inspect available platforms, command and options for a given platform by adding `-h` at the end, for example:
+### `logkitten(options: LogkittyOptions): EventEmitter`
 
-```sh
-logkitten -h # prints available platforms and global options
-logkitten android -h # prints commands and options for android
-logkitten android tag -h # prints tag command syntax and options for android
+Spawns logkitten with given options:
+
+* `platform: 'android' | 'ios'` - Platform to get the logs from: uses `adb logcat` for Android and `xcrun simctl` + `log` for iOS simulator.
+* `adbPath?: string` - Custom path to adb tool or `undefined` (used only when `platform` is `android`).
+* `priority?: number` - Minimum priority of entries to show of `undefined`, which will include all entries with priority **DEBUG** (Android)/**DEFAULT** (iOS) or above.
+* `filter?: (entry: Entry) => boolean` - Optional filter function that receives each log entry and returns true to include it or false to exclude it.
+
+When spawning logkitten you will get a instance of `EventEmitter` which emits the following events:
+
+* `entry` (arguments: `entry: Entry`) - Emitted when new log comes in, that matches the `filter` and `priority` options. Process the structured entry object for your analysis needs.
+* `error` (arguments: `error: Error`) - Emitted when the log can't be parsed into a entry or when the Logcat process emits an error.
+
+### Entry Structure
+
+Each log entry is a structured object:
+
+```ts
+interface Entry {
+  date: Dayjs;           // Parsed timestamp
+  pid: number;           // Process ID
+  priority: number;      // Log priority/level
+  tag: string;           // Log tag
+  appId?: string;        // App identifier (Android)
+  messages: string[];    // Log message lines
+  platform: 'android' | 'ios';
+}
 ```
 
-### Commands
+## Filtering
 
-* platform: `android`:
-  * `tag <tags...>` - Show logs with matching tags.
-  * `app <appId>` - Show logs from application with given identifier.
-  * `match <regexes...>` - Show logs matching given patterns (all regexes have flags `g` and `m`).
-  * `custom <patterns...>` - Use custom [patters supported by Logcat](https://developer.android.com/studio/command-line/logcat#filteringOutput).
-  * `all` - Show all logs.
-* platform: `ios`:
-  * `tag <tags...>` - Show logs with matching tags (where tag is usually a name of the app).
-  * `match <regexes...>` - Show logs matching given patterns (all regexes have flags `g` and `m`).
-  * `all` - Show all logs.
+You can provide a custom filter function to control which log entries are emitted:
 
-### Options
-
-* common:
-  * `-h, --help` - Display help
-  * `-v, --version` - Display version
-* platform `android`:
-
-  `tag`, `app`, `match` and `all` commands support additional priority filtering options (sorted by priority):
-
-  * `-U, -u` - Unknown priority (lowest)
-  * `-v, -v` - Verbose priority
-  * `-D, -d` - Debug priority (default)
-  * `-I, -i` - Info priority
-  * `-W, -w` - Warn priority
-  * `-E, -e` - Error priority
-  * `-F, -f` - Fatal priority
-  * `-S, -s` - Silent priority (highest)
-
-  For example `logkitten android all -W` will display all logs with priority __warn__, __error__ and __fatal__.
-
-* platform `ios`:
-
-  `tag`, `match` and `all` commands support additional level filtering options:
-
-  * `-D, -d` - Debug level
-  * `-I, -i` - Info level
-  * `-E, -e` - Error level
-
-### Examples
-
-Show all logs with tag `ReactNativeJS` (and default priority - __debug and above__):
-
-```sh
-logkitten android tag ReactNativeJS
-logkitten ios tag ReactNativeJS
+```ts
+const emitter = logkitten({
+  platform: 'android',
+  priority: AndroidPriority.INFO,
+  filter: (entry) => {
+    // Only include entries with specific tags
+    return entry.tag === 'MyApp' || entry.tag === 'ReactNative';
+  }
+});
 ```
 
-Show all logs with priority __info and above__ from application with identifier `com.example.myApplication`:
+### Filter Examples
 
-```sh
-logkitten android app com.example.myApplication -i
+**Filter by tag:**
+```ts
+filter: (entry) => entry.tag === 'MyApp'
 ```
 
-Show all logs matching `/CodePush/gm` regex:
-
-```sh
-logkitten android match CodePush
-logkitten ios match CodePush
+**Filter by app (Android only):**
+```ts
+filter: (entry) => entry.pid === myAppPid
 ```
 
-Show all logs with priority __error__ or __fatal__ for Android and __error_ level for iOS:
-
-```sh
-logkitten android all -e
-logkitten ios all -e
+**Filter by message content:**
+```ts
+filter: (entry) => entry.messages.some(msg => /error|warning/i.test(msg))
 ```
 
-Show logs using custom patterns - silence all logs and display only the onces with tag `my-tag` and priority __debug and above__:
-
-```sh
-logkitten android custom *:S my-tag:D
+**Complex filtering:**
+```ts
+filter: (entry) => {
+  const isMyApp = entry.tag === 'MyApp';
+  const isError = entry.priority >= AndroidPriority.ERROR;
+  const hasKeyword = entry.messages.some(msg => msg.includes('network'));
+  return isMyApp && (isError || hasKeyword);
+}
 ```
 
-### Node API
+## Priority Levels
 
-If your building a tool and want to use Node API, head over to [Node API documentation](./docs/NODE_API.md).
+### Android Priorities
+
+```ts
+import { AndroidPriority } from 'logkitten';
+
+// Available priorities (from lowest to highest):
+AndroidPriority.UNKNOWN  // Unknown priority
+AndroidPriority.VERBOSE  // Verbose priority
+AndroidPriority.DEBUG    // Debug priority (default)
+AndroidPriority.INFO     // Info priority
+AndroidPriority.WARN     // Warn priority
+AndroidPriority.ERROR    // Error priority
+AndroidPriority.FATAL    // Fatal priority
+AndroidPriority.SILENT   // Silent priority
+```
+
+### iOS Priorities
+
+```ts
+import { IosPriority } from 'logkitten';
+
+// Available priorities:
+IosPriority.DEFAULT  // Default level
+IosPriority.DEBUG    // Debug level
+IosPriority.INFO     // Info level
+IosPriority.ERROR    // Error level
+```
+
+## Examples
+
+### Log Analysis
+
+```ts
+import { logkitten, AndroidPriority } from 'logkitten';
+
+const emitter = logkitten({
+  platform: 'android',
+  priority: AndroidPriority.INFO,
+});
+
+const errorCount = new Map();
+
+emitter.on('entry', (entry) => {
+  if (entry.priority >= AndroidPriority.ERROR) {
+    const count = errorCount.get(entry.tag) || 0;
+    errorCount.set(entry.tag, count + 1);
+  }
+});
+
+// Log error summary every 10 seconds
+setInterval(() => {
+  console.log('Error counts by tag:', Object.fromEntries(errorCount));
+}, 10000);
+```
+
+### Filtering and Processing
+
+```ts
+import { logkitten, IosPriority } from 'logkitten';
+
+const emitter = logkitten({
+  platform: 'ios',
+  priority: IosPriority.DEBUG,
+  filter: (entry) => entry.tag === 'MyApp',
+});
+
+const logs = [];
+
+emitter.on('entry', (entry) => {
+  // Store structured log data
+  logs.push({
+    timestamp: entry.date.unix(),
+    level: entry.priority,
+    source: entry.tag,
+    content: entry.messages.join(' '),
+  });
+
+  // Keep only last 1000 entries
+  if (logs.length > 1000) {
+    logs.shift();
+  }
+});
+```
+
+### Custom ADB path (Android)
+
+```ts
+import { logkitten, AndroidPriority } from 'logkitten';
+
+const emitter = logkitten({
+  platform: 'android',
+  adbPath: '/custom/path/to/adb',
+  priority: AndroidPriority.DEBUG,
+});
+```
+
+### Advanced Filtering
+
+```ts
+import { logkitten, AndroidPriority } from 'logkitten';
+
+const emitter = logkitten({
+  platform: 'android',
+  priority: AndroidPriority.VERBOSE,
+  filter: (entry) => {
+    // Multi-criteria filtering
+    const isReactNative = entry.tag?.includes('ReactNative');
+    const isMyApp = entry.tag === 'MyApp';
+    const hasError = entry.messages.some(msg => /error|exception/i.test(msg));
+    const isHighPriority = entry.priority >= AndroidPriority.WARN;
+
+    // Include if it's from my app components OR if it's a high priority message with errors
+    return (isReactNative || isMyApp) || (isHighPriority && hasError);
+  }
+});
+```
 
 ## Credits
 
