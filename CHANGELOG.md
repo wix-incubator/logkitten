@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/wix-incubator/logkitten/compare/v1.0.2...v1.1.0) (2025-06-20)
+
+
+### Features
+
+* add support for specific device selection ([652fa24](https://github.com/wix-incubator/logkitten/commit/652fa24c0af8a7fa46433e1382d53e8fe4f90048))
+
 ## [1.0.2](https://github.com/wix-incubator/logkitten/compare/v1.0.1...v1.0.2) (2025-06-20)
 
 
