@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import {
-  logkitty,
+  logkitten,
   AndroidPriority,
   makeTagsFilter,
   makeMatchFilter,
@@ -39,7 +39,7 @@ describe('Node API', () => {
           stderr: new EventEmitter(),
         }));
 
-        const emitter = logkitty({
+        const emitter = logkitten({
           platform: 'android',
           priority: AndroidPriority.INFO,
         });
@@ -87,7 +87,7 @@ describe('Node API', () => {
           }
         );
 
-        const emitter = logkitty({
+        const emitter = logkitten({
           platform: 'android',
           priority: AndroidPriority.INFO,
           filter: makeAppFilter('com.example.app'),
@@ -116,7 +116,7 @@ describe('Node API', () => {
           stderr: new EventEmitter(),
         }));
 
-        const emitter = logkitty({
+        const emitter = logkitten({
           platform: 'android',
           priority: AndroidPriority.VERBOSE,
           filter: makeTagsFilter('wificond', 'storaged'),
@@ -158,7 +158,7 @@ describe('Node API', () => {
           stderr: new EventEmitter(),
         }));
 
-        const emitter = logkitty({
+        const emitter = logkitten({
           platform: 'android',
           priority: AndroidPriority.VERBOSE,
           filter: makeMatchFilter(/scan/),
@@ -197,7 +197,7 @@ describe('Node API', () => {
           stderr: new EventEmitter(),
         }));
 
-        const emitter = logkitty({
+        const emitter = logkitten({
           platform: 'android',
           priority: AndroidPriority.VERBOSE,
           filter: makeCustomFilter('*:S', 'storaged:I'),
@@ -232,7 +232,7 @@ describe('Node API', () => {
           })
         );
 
-        const emitter = logkitty({
+        const emitter = logkitten({
           platform: 'ios',
         });
 
@@ -261,7 +261,7 @@ describe('Node API', () => {
           })
         );
 
-        const emitter = logkitty({
+        const emitter = logkitten({
           platform: 'ios',
           filter: makeTagsFilter('testApp1'),
         });
@@ -291,7 +291,7 @@ describe('Node API', () => {
           })
         );
 
-        const emitter = logkitty({
+        const emitter = logkitten({
           platform: 'ios',
           filter: makeMatchFilter(/test\s/),
         });
@@ -314,7 +314,7 @@ describe('Node API', () => {
 
     it('makeAppFilter should throw error', () => {
       expect(() => {
-        logkitty({
+        logkitten({
           platform: 'ios',
           filter: makeAppFilter('com.example.app'),
         });
@@ -323,7 +323,7 @@ describe('Node API', () => {
 
     it('makeCustomFilter should throw error', () => {
       expect(() => {
-        logkitty({
+        logkitten({
           platform: 'ios',
           filter: makeCustomFilter(''),
         });
@@ -338,7 +338,7 @@ describe('Node API', () => {
       stderr: new EventEmitter(),
     }));
 
-    const emitter = logkitty({
+    const emitter = logkitten({
       platform: 'android',
     });
 
@@ -357,7 +357,7 @@ describe('Node API', () => {
       stderr: new EventEmitter(),
     }));
 
-    const emitter = logkitty({
+    const emitter = logkitten({
       platform: 'android',
     });
 
@@ -371,7 +371,7 @@ describe('Node API', () => {
 
   it('should emit error when platform is not supported', () => {
     expect(() => {
-      logkitty({
+      logkitten({
         platform: 'windows' as any,
       });
     }).toThrow('Platform windows is not supported');

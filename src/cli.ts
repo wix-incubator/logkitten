@@ -1,6 +1,6 @@
 import yargs from 'yargs';
 import {
-  logkitty,
+  logkitten,
   makeAppFilter,
   makeTagsFilter,
   makeMatchFilter,
@@ -215,7 +215,7 @@ try {
     case 'all':
     default:
   }
-  const emitter = logkitty({
+  const emitter = logkitten({
     platform: platform as Platform,
     adbPath: args.adbPath ? String(args.adbPath) : '',
     priority:

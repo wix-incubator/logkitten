@@ -78,7 +78,7 @@ export function makeCustomFilter(...patterns: string[]): FilterCreator {
   };
 }
 
-export function logkitty(options: LogkittyOptions): EventEmitter {
+export function logkitten(options: LogkittyOptions): EventEmitter {
   const { platform, adbPath, priority, filter: createFilter } = options;
   const emitter = new EventEmitter();
 

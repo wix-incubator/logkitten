@@ -1,4 +1,4 @@
-# @wix/logkitty
+# logkitten
 
 [![Version][version]][package]
 
@@ -9,27 +9,27 @@
 
 Display __pretty__ Android and iOS logs __without Android Studio or Console.app__,  with __intuitive__ Command Line Interface.
 
-> This is a Wix fork of the original [logkitty](https://github.com/zamotany/logkitty) project.
+> This is a Wix fork of the original [logkitten](https://github.com/zamotany/logkitten) project.
 
-![Demo](./logkitty.gif)
+![Demo](./logkitten.gif)
 
 ## Installation
 
 ```sh
-yarn global add @wix/logkitty
+yarn global add logkitten
 ```
 
 Or if you prefer having it locally:
 
 ```sh
-yarn add -D @wix/logkitty
-yarn logkitty --help
+yarn add -D logkitten
+yarn logkitten --help
 ```
 
 ## Usage
 
 ```sh
-logkitty <platform> <command> [options]
+logkitten <platform> <command> [options]
 ```
 
 ### Command line help
@@ -37,9 +37,9 @@ logkitty <platform> <command> [options]
 You can inspect available platforms, command and options for a given platform by adding `-h` at the end, for example:
 
 ```sh
-logkitty -h # prints available platforms and global options
-logkitty android -h # prints commands and options for android
-logkitty android tag -h # prints tag command syntax and options for android
+logkitten -h # prints available platforms and global options
+logkitten android -h # prints commands and options for android
+logkitten android tag -h # prints tag command syntax and options for android
 ```
 
 ### Commands
@@ -73,7 +73,7 @@ logkitty android tag -h # prints tag command syntax and options for android
   * `-F, -f` - Fatal priority
   * `-S, -s` - Silent priority (highest)
 
-  For example `logkitty android all -W` will display all logs with priority __warn__, __error__ and __fatal__.
+  For example `logkitten android all -W` will display all logs with priority __warn__, __error__ and __fatal__.
 
 * platform `ios`:
 
@@ -88,50 +88,57 @@ logkitty android tag -h # prints tag command syntax and options for android
 Show all logs with tag `ReactNativeJS` (and default priority - __debug and above__):
 
 ```sh
-logkitty android tag ReactNativeJS
-logkitty ios tag ReactNativeJS
+logkitten android tag ReactNativeJS
+logkitten ios tag ReactNativeJS
 ```
 
 Show all logs with priority __info and above__ from application with identifier `com.example.myApplication`:
 
 ```sh
-logkitty android app com.example.myApplication -i
+logkitten android app com.example.myApplication -i
 ```
 
 Show all logs matching `/CodePush/gm` regex:
 
 ```sh
-logkitty android match CodePush
-logkitty ios match CodePush
+logkitten android match CodePush
+logkitten ios match CodePush
 ```
 
 Show all logs with priority __error__ or __fatal__ for Android and __error_ level for iOS:
 
 ```sh
-logkitty android all -e
-logkitty ios all -e
+logkitten android all -e
+logkitten ios all -e
 ```
 
 Show logs using custom patterns - silence all logs and display only the onces with tag `my-tag` and priority __debug and above__:
 
 ```sh
-logkitty android custom *:S my-tag:D
+logkitten android custom *:S my-tag:D
 ```
 
 ### Node API
 
 If your building a tool and want to use Node API, head over to [Node API documentation](./docs/NODE_API.md).
 
+## Credits
+
+This project is a fork and continuation of the original [logkitten](https://github.com/zamotany/logkitten) by [Paweł Trysła (@zamotany)](https://github.com/zamotany), maintained by Wix.
+
+The original project has been inactive since 2020, and this fork continues development with modern dependencies and bug fixes.
+While we maintain this fork primarily for our own use, we welcome community contributions and will consider issues and feature requests as time permits.
+
 <!-- badges (common) -->
 
-[license-badge]: https://img.shields.io/npm/l/@wix/logkitty.svg?style=flat-square
+[license-badge]: https://img.shields.io/npm/l/logkitten.svg?style=flat-square
 [license]: https://opensource.org/licenses/MIT
 [prs-welcome-badge]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square
 [prs-welcome]: http://makeapullrequest.com
 [coc-badge]: https://img.shields.io/badge/code%20of-conduct-ff69b4.svg?style=flat-square
-[coc]: https://github.com/wix-incubator/logkitty/blob/master/CODE_OF_CONDUCT.md
+[coc]: https://github.com/wix-incubator/logkitten/blob/master/CODE_OF_CONDUCT.md
 [chat-badge]: https://img.shields.io/badge/chat-discord-brightgreen.svg?style=flat-square&colorB=7289DA&logo=discord
 [chat]: https://discord.gg/zwR2Cdh
 
-[version]: https://img.shields.io/npm/v/@wix/logkitty.svg?style=flat-square
-[package]: https://www.npmjs.com/package/@wix/logkitty
+[version]: https://img.shields.io/npm/v/logkitten.svg?style=flat-square
+[package]: https://www.npmjs.com/package/logkitten

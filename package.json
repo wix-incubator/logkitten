@@ -1,5 +1,5 @@
 {
-  "name": "@wix/logkitty",
+  "name": "logkitten",
   "version": "1.0.0",
   "description": "Display pretty Android and iOS logs without Android Studio or Console.app, with intuitive Command Line Interface.",
   "packageManager": "yarn@4.9.2",
@@ -20,18 +20,18 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/wix-incubator/logkitty.git"
+    "url": "https://github.com/wix-incubator/logkitten.git"
   },
   "author": "Paweł Trysła <zamotany.oss@gmail.com>",
   "contributors": [
     "Yaroslav Serhieiev <noomorph@gmail.com>"
   ],
   "bugs": {
-    "url": "https://github.com/wix-incubator/logkitty/issues"
+    "url": "https://github.com/wix-incubator/logkitten/issues"
   },
-  "homepage": "https://github.com/wix-incubator/logkitty",
+  "homepage": "https://github.com/wix-incubator/logkitten",
   "license": "MIT",
-  "bin": "bin/logkitty.js",
+  "bin": "bin/logkitten.js",
   "main": "build/api.js",
   "files": [
     "docs",
