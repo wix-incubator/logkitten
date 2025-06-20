@@ -1,11 +1,8 @@
 # logkitten
 
 [![Version][version]][package]
-
 [![PRs Welcome][prs-welcome-badge]][prs-welcome]
 [![MIT License][license-badge]][license]
-[![Chat][chat-badge]][chat]
-[![Code of Conduct][coc-badge]][coc]
 
 Stream Android and iOS logs without Android Studio or Console.app, with programmatic Node.js API for log analysis.
 
@@ -257,10 +254,5 @@ While we maintain this fork primarily for our own use, we welcome community cont
 [license]: https://opensource.org/licenses/MIT
 [prs-welcome-badge]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square
 [prs-welcome]: http://makeapullrequest.com
-[coc-badge]: https://img.shields.io/badge/code%20of-conduct-ff69b4.svg?style=flat-square
-[coc]: https://github.com/wix-incubator/logkitten/blob/master/CODE_OF_CONDUCT.md
-[chat-badge]: https://img.shields.io/badge/chat-discord-brightgreen.svg?style=flat-square&colorB=7289DA&logo=discord
-[chat]: https://discord.gg/zwR2Cdh
-
 [version]: https://img.shields.io/npm/v/logkitten.svg?style=flat-square
 [package]: https://www.npmjs.com/package/logkitten
