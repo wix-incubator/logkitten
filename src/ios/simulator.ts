@@ -1,14 +1,16 @@
 import { ChildProcess, spawn } from 'child_process';
 import { CodeError, ERR_IOS_CANNOT_START_SYSLOG } from '../errors';
 
-export function runSimulatorLoggingProcess(): ChildProcess {
+export function runSimulatorLoggingProcess(deviceId?: string): ChildProcess {
+  const targetDevice = deviceId || 'booted';
+
   try {
     return spawn(
       'xcrun',
       [
         'simctl',
         'spawn',
-        'booted',
+        targetDevice,
         'log',
         'stream',
         '--type',

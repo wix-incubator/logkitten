@@ -56,6 +56,7 @@ Spawns logkitten with given options:
 
 * `platform: 'android' | 'ios'` - Platform to get the logs from: uses `adb logcat` for Android and `xcrun simctl` + `log` for iOS simulator.
 * `adbPath?: string` - Custom path to adb tool or `undefined` (used only when `platform` is `android`).
+* `deviceId?: string` - Specific device to target. For Android, this is the device serial number used with `adb -s`. For iOS, this is the simulator UDID used with `xcrun simctl`. If not provided, defaults to the current device (Android) or `booted` simulator (iOS).
 * `priority?: number` - Minimum priority of entries to show of `undefined`, which will include all entries with priority **DEBUG** (Android)/**DEFAULT** (iOS) or above.
 * `filter?: (entry: Entry) => boolean` - Optional filter function that receives each log entry and returns true to include it or false to exclude it.
 
@@ -217,6 +218,30 @@ const emitter = logkitten({
   platform: 'android',
   adbPath: '/custom/path/to/adb',
   priority: AndroidPriority.DEBUG,
+});
+```
+
+### Specific Device Selection
+
+**Android with specific device:**
+```ts
+import { logkitten, AndroidPriority } from 'logkitten';
+
+const emitter = logkitten({
+  platform: 'android',
+  deviceId: 'emulator-5554', // or device serial like 'R58M123456X'
+  priority: AndroidPriority.DEBUG,
+});
+```
+
+**iOS with specific simulator:**
+```ts
+import { logkitten, IosPriority } from 'logkitten';
+
+const emitter = logkitten({
+  platform: 'ios',
+  deviceId: 'A1B2C3D4-E5F6-7890-ABCD-EF1234567890', // simulator UDID
+  priority: IosPriority.DEBUG,
 });
 ```
 
