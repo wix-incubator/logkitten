@@ -21,12 +21,13 @@ export { Entry } from './types';
 export type LogkittyOptions = {
   platform: Platform;
   adbPath?: string;
+  deviceId?: string;
   priority?: number;
   filter?: (entry: Entry) => boolean;
 };
 
 export function logkitten(options: LogkittyOptions): EventEmitter {
-  const { platform, adbPath, priority, filter: userFilter } = options;
+  const { platform, adbPath, deviceId, priority, filter: userFilter } = options;
   const emitter = new EventEmitter();
 
   if (
@@ -45,8 +46,8 @@ export function logkitten(options: LogkittyOptions): EventEmitter {
 
   const loggingProcess =
     platform === 'android'
-      ? runAndroidLoggingProcess(adbPath)
-      : runSimulatorLoggingProcess();
+      ? runAndroidLoggingProcess(adbPath, deviceId)
+      : runSimulatorLoggingProcess(deviceId);
 
   process.on('exit', () => {
     loggingProcess.kill();

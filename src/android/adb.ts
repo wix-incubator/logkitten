@@ -6,9 +6,12 @@ import {
   ERR_ANDROID_CANNOT_START_LOGCAT,
 } from '../errors';
 
-export function runAndroidLoggingProcess(adbPath?: string): ChildProcess {
+export function runAndroidLoggingProcess(
+  adbPath?: string,
+  deviceId?: string
+): ChildProcess {
   const execPath = getAdbPath(adbPath);
-  return spawnLogcatProcess(execPath);
+  return spawnLogcatProcess(execPath, deviceId);
 }
 
 export function getSdkRoot(): string | undefined {
@@ -23,9 +26,14 @@ export function getAdbPath(customPath?: string): string {
   return sdkRoot ? `${sdkRoot}/platform-tools/adb` : 'adb';
 }
 
-export function spawnLogcatProcess(adbPath: string): ChildProcess {
+export function spawnLogcatProcess(
+  adbPath: string,
+  deviceId?: string
+): ChildProcess {
+  const baseArgs = deviceId ? ['-s', deviceId] : [];
+
   try {
-    execFileSync(adbPath, ['logcat', '-c']);
+    execFileSync(adbPath, [...baseArgs, 'logcat', '-c']);
   } catch (error) {
     throw new CodeError(
       ERR_ANDROID_CANNOT_CLEAN_LOGCAT_BUFFER,
@@ -34,9 +42,13 @@ export function spawnLogcatProcess(adbPath: string): ChildProcess {
   }
 
   try {
-    return spawn(adbPath, ['logcat', '-v', 'time', 'process', 'tag'], {
-      stdio: 'pipe',
-    });
+    return spawn(
+      adbPath,
+      [...baseArgs, 'logcat', '-v', 'time', 'process', 'tag'],
+      {
+        stdio: 'pipe',
+      }
+    );
   } catch (error) {
     throw new CodeError(
       ERR_ANDROID_CANNOT_START_LOGCAT,

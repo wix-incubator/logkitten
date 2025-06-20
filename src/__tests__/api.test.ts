@@ -145,6 +145,25 @@ describe('Node API', () => {
           done();
         });
       });
+
+      it('should pass deviceId to Android logging process', () => {
+        const loggingEmitter = new EventEmitter();
+        (runAndroidLoggingProcess as jest.Mock).mockImplementationOnce(() => ({
+          stdout: loggingEmitter,
+          stderr: new EventEmitter(),
+        }));
+
+        logkitten({
+          platform: 'android',
+          deviceId: 'emulator-5554',
+          priority: AndroidPriority.DEBUG,
+        });
+
+        expect(runAndroidLoggingProcess).toHaveBeenCalledWith(
+          undefined,
+          'emulator-5554'
+        );
+      });
     });
   });
 
@@ -237,6 +256,25 @@ describe('Node API', () => {
           expect(entriesEmitted).toBe(1);
           done();
         }, 0);
+      });
+
+      it('should pass deviceId to iOS logging process', () => {
+        const loggingEmitter = new EventEmitter();
+        (runSimulatorLoggingProcess as jest.Mock).mockImplementationOnce(
+          () => ({
+            stdout: loggingEmitter,
+            stderr: new EventEmitter(),
+          })
+        );
+
+        logkitten({
+          platform: 'ios',
+          deviceId: 'A1B2C3D4-E5F6-7890-ABCD-EF1234567890',
+        });
+
+        expect(runSimulatorLoggingProcess).toHaveBeenCalledWith(
+          'A1B2C3D4-E5F6-7890-ABCD-EF1234567890'
+        );
       });
     });
   });
