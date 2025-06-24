@@ -1,10 +1,17 @@
-import DayJS from 'dayjs';
 import { Parser, Entry } from '../types';
 import { Priority } from './constants';
 
 export default class AndroidParser implements Parser {
   static timeRegex: RegExp = /(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}).\d{3}/m;
   static headerRegex: RegExp = /^\s*(\w)\/(.+)\(([\s\d]+)\):/;
+
+  #year: number;
+  #lastMonth: number | undefined;
+
+  constructor(baseYear?: number) {
+    this.#year = baseYear || new Date().getFullYear();
+    this.#lastMonth = undefined;
+  }
 
   splitMessages(raw: string): string[] {
     const messages: string[] = [];
@@ -36,15 +43,23 @@ export default class AndroidParser implements Parser {
           .match(AndroidParser.headerRegex) || ['', 'U', 'unknown', '-1'];
 
         const [, priority, tag, pid] = headerMatch;
+
+        const month = parseInt(timeMatch[1], 10) - 1;
+        const day = parseInt(timeMatch[2], 10);
+        const hour = parseInt(timeMatch[3], 10);
+        const minute = parseInt(timeMatch[4], 10);
+        const second = parseInt(timeMatch[5], 10);
+
+        if (this.#lastMonth !== undefined && month < this.#lastMonth) {
+          this.#year++;
+        }
+        this.#lastMonth = month;
+
+        const date = Date.UTC(this.#year, month, day, hour, minute, second, 0);
+
         return {
           platform: 'android',
-          date: DayJS()
-            .set('month', parseInt(timeMatch[1], 10))
-            .set('day', parseInt(timeMatch[2], 10))
-            .set('hour', parseInt(timeMatch[3], 10))
-            .set('minute', parseInt(timeMatch[4], 10))
-            .set('second', parseInt(timeMatch[5], 10))
-            .set('millisecond', 0),
+          ts: date,
           pid: parseInt(pid.trim(), 10) || 0,
           priority: Priority.fromLetter(priority),
           tag: tag.trim() || 'unknown',
@@ -58,7 +73,7 @@ export default class AndroidParser implements Parser {
       .reduce((acc: Entry[], entry: Entry) => {
         if (
           acc.length > 0 &&
-          acc[acc.length - 1].date.isSame(entry.date) &&
+          acc[acc.length - 1].ts === entry.ts &&
           acc[acc.length - 1].tag === entry.tag &&
           acc[acc.length - 1].pid === entry.pid &&
           acc[acc.length - 1].priority === entry.priority

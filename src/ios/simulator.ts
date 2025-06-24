@@ -17,6 +17,8 @@ export function runSimulatorLoggingProcess(deviceId?: string): ChildProcess {
         'log',
         '--level',
         'debug',
+        '--format',
+        'ndjson',
       ],
       {
         stdio: 'pipe',

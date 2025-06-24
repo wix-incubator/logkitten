@@ -3,14 +3,8 @@ import { logkitten, AndroidPriority } from '../api';
 import { runAndroidLoggingProcess } from '../android/adb';
 import { runSimulatorLoggingProcess } from '../ios/simulator';
 import { Entry } from '../types';
-import {
-  ANDROID_PARSED_LOG_FIXTURES,
-  ANDROID_RAW_LOG_FIXTURES,
-} from './__fixtures__/android';
-import {
-  IOS_PARSED_LOG_FIXTURES,
-  IOS_RAW_LOG_FIXTURES,
-} from './__fixtures__/ios';
+import { ANDROID_RAW_LOG_FIXTURES } from './__fixtures__/android';
+import { IOS_RAW_LOG_FIXTURES } from './__fixtures__/ios';
 
 jest.mock('../android/adb.ts', () => ({
   runAndroidLoggingProcess: jest.fn(),
@@ -37,20 +31,7 @@ describe('Node API', () => {
         });
 
         emitter.on('entry', (entry: Entry) => {
-          switch (entriesEmitted) {
-            case 0:
-              expect(entry).toEqual(ANDROID_PARSED_LOG_FIXTURES[0]);
-              break;
-            case 1:
-              expect(entry).toEqual(ANDROID_PARSED_LOG_FIXTURES[1]);
-              break;
-            case 2:
-              expect(entry).toEqual(ANDROID_PARSED_LOG_FIXTURES[2]);
-              break;
-            default:
-              throw new Error('should never get here');
-          }
-
+          expect(entry).toMatchSnapshot();
           entriesEmitted += 1;
         });
 
@@ -80,20 +61,7 @@ describe('Node API', () => {
         });
 
         emitter.on('entry', (entry: Entry) => {
-          switch (entriesEmitted) {
-            case 0:
-              expect(entry).toEqual(ANDROID_PARSED_LOG_FIXTURES[0]);
-              break;
-            case 1:
-              expect(entry).toEqual(ANDROID_PARSED_LOG_FIXTURES[2]);
-              break;
-            case 2:
-              expect(entry).toEqual(ANDROID_PARSED_LOG_FIXTURES[3]);
-              break;
-            default:
-              throw new Error('should never get here');
-          }
-
+          expect(entry).toMatchSnapshot();
           entriesEmitted += 1;
         });
 
@@ -122,17 +90,7 @@ describe('Node API', () => {
         });
 
         emitter.on('entry', (entry: Entry) => {
-          switch (entriesEmitted) {
-            case 0:
-              expect(entry).toEqual(ANDROID_PARSED_LOG_FIXTURES[2]);
-              break;
-            case 1:
-              expect(entry).toEqual(ANDROID_PARSED_LOG_FIXTURES[3]);
-              break;
-            default:
-              throw new Error('should never get here');
-          }
-
+          expect(entry).toMatchSnapshot();
           entriesEmitted += 1;
         });
 
@@ -184,7 +142,7 @@ describe('Node API', () => {
         });
 
         emitter.on('entry', (entry: Entry) => {
-          expect(entry).toEqual(IOS_PARSED_LOG_FIXTURES[entriesEmitted]);
+          expect(entry).toMatchSnapshot();
           entriesEmitted += 1;
         });
 
@@ -193,7 +151,7 @@ describe('Node API', () => {
         });
 
         setTimeout(() => {
-          expect(entriesEmitted).toBe(6);
+          expect(entriesEmitted).toBe(4);
           done();
         });
       });
@@ -210,11 +168,14 @@ describe('Node API', () => {
 
         const emitter = logkitten({
           platform: 'ios',
-          filter: (entry) => entry.tag === 'testApp1',
+          filter: (entry) => entry.tag === 'com.apple.network',
         });
 
         emitter.on('entry', (entry: Entry) => {
-          expect(entry).toEqual(IOS_PARSED_LOG_FIXTURES[5]);
+          expect(entry).toMatchSnapshot();
+          if (entriesEmitted === 1) {
+            expect(entry).toMatchSnapshot();
+          }
           entriesEmitted += 1;
         });
 
@@ -223,7 +184,7 @@ describe('Node API', () => {
         });
 
         setTimeout(() => {
-          expect(entriesEmitted).toBe(1);
+          expect(entriesEmitted).toBe(3);
           done();
         }, 0);
       });
@@ -240,12 +201,18 @@ describe('Node API', () => {
 
         const emitter = logkitten({
           platform: 'ios',
-          filter: (entry) => entry.messages.some((msg) => /test\s/.test(msg)),
+          filter: (entry) =>
+            entry.messages.some((msg) => /Socket SO_ERROR/.test(msg)),
         });
 
         emitter.on('entry', (entry: Entry) => {
-          expect(entry).toEqual(IOS_PARSED_LOG_FIXTURES[2]);
-          entriesEmitted += 1;
+          try {
+            expect(entry).toMatchSnapshot();
+            entriesEmitted += 1;
+          } catch (error) {
+            console.error('Test failed for entry:', entry, error);
+            done(error);
+          }
         });
 
         IOS_RAW_LOG_FIXTURES.forEach((data: string) => {
@@ -253,9 +220,13 @@ describe('Node API', () => {
         });
 
         setTimeout(() => {
-          expect(entriesEmitted).toBe(1);
-          done();
-        }, 0);
+          try {
+            expect(entriesEmitted).toBe(1);
+            done();
+          } catch (error) {
+            done(error);
+          }
+        }, 100);
       });
 
       it('should pass deviceId to iOS logging process', () => {

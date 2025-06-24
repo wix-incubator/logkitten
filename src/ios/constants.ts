@@ -1,33 +1,22 @@
-const codes = {
-  DEBUG: 0,
-  DEFAULT: 1,
-  INFO: 2,
-  ERROR: 3,
-};
+export enum Priority {
+  UNKNOWN = 0,
+  DEBUG = 1,
+  INFO = 2,
+  DEFAULT = 3,
+  ERROR = 5,
+  FAULT = 6,
+}
 
-export type PriorityNames = keyof typeof codes;
+export type PriorityNames = keyof typeof Priority;
 
-export const Priority = {
-  ...codes,
-  fromName(name: PriorityNames): number {
-    const value = codes[name.toUpperCase() as PriorityNames];
-    return value ? value : 0;
+// Helper functions
+export const PriorityUtils = {
+  fromName(name: string): number {
+    const value = Priority[name?.toUpperCase() as PriorityNames];
+    return typeof value === 'number' ? value : Priority.UNKNOWN;
   },
   toName(code: number): PriorityNames {
-    return (
-      (Object.keys(codes) as PriorityNames[]).find(
-        (key: PriorityNames) => codes[key] === code
-      ) || 'DEFAULT'
-    );
-  },
-  fromLetter(letter: string): number {
-    return codes[
-      (Object.keys(codes) as PriorityNames[]).find(
-        (key: PriorityNames) => key[0] === letter.toUpperCase()
-      ) || 'DEFAULT'
-    ];
-  },
-  toLetter(code: number): string {
-    return Priority.toName(code)[0];
+    const name = Priority[code] as PriorityNames;
+    return name || 'UNKNOWN';
   },
 };

@@ -1,65 +1,76 @@
-import DayJS from 'dayjs';
 import { Parser, Entry } from '../types';
-import { Priority, PriorityNames } from './constants';
+import { PriorityUtils } from './constants';
+
+export interface RawEntryIOS {
+  timezoneName: string;
+  messageType: string;
+  eventType: string;
+  source: any;
+  formatString: string;
+  userID: number;
+  activityIdentifier: number;
+  subsystem: string;
+  category: string;
+  threadID: number;
+  senderImageUUID: string;
+  backtrace: RawEntryIOS$Backtrace;
+  bootUUID: string;
+  processImagePath: string;
+  senderImagePath: string;
+  timestamp: string;
+  machTimestamp: number;
+  eventMessage: string;
+  processImageUUID: string;
+  traceID: number;
+  processID: number;
+  senderProgramCounter: number;
+  parentActivityIdentifier: number;
+}
+
+export interface RawEntryIOS$Backtrace {
+  frames: RawEntryIOS$Frame[];
+}
+
+export interface RawEntryIOS$Frame {
+  imageOffset: number;
+  imageUUID: string;
+}
 
 export default class IosParser implements Parser {
-  static timeRegex: RegExp = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.[\d+]+/m;
-  static headerRegex: RegExp =
-    /^\s+[a-z0-9]+\s+(\w+)\s+[a-z0-9]+\s+(\d+)\s+\d+\s+([^:]+):/;
-
   splitMessages(raw: string): string[] {
-    const messages: string[] = [];
-    let data = raw.toString();
-    let match = data.match(IosParser.timeRegex);
-    while (match) {
-      const timeMatch = match[0];
-      data = data.slice((match.index || 0) + timeMatch.length);
-      const nextMatch = data.match(IosParser.timeRegex);
-      const body = nextMatch ? data.slice(0, nextMatch.index) : data;
-      messages.push(`${timeMatch} ${body}`);
-      match = nextMatch;
-    }
-    return messages;
+    // Each line is a JSON object
+    return raw.split(/\r?\n/).filter(Boolean);
   }
 
   parseMessages(messages: string[]): Entry[] {
-    return messages
-      .map((rawMessage: string): Entry => {
-        const timeMatch = rawMessage.match(IosParser.timeRegex);
-        if (!timeMatch) {
-          throw new Error(
-            `Time regex was not matched in message: ${rawMessage}`
-          );
-        }
-        const headerMatch = rawMessage
-          .slice(timeMatch[0].length)
-          .match(IosParser.headerRegex) || ['', 'Default', '-1', 'unknown'];
-        const [, priority, pid, tag] = headerMatch;
-        return {
-          platform: 'ios',
-          date: DayJS(timeMatch[0]).set('millisecond', 0),
-          pid: parseInt(pid.trim(), 10) || 0,
-          priority: Priority.fromName(priority as PriorityNames),
-          tag,
-          messages: [
-            rawMessage
-              .slice(timeMatch[0].length + headerMatch[0].length)
-              .trim(),
-          ],
-        };
-      })
-      .reduce((acc: Entry[], entry: Entry) => {
-        if (
-          acc.length > 0 &&
-          acc[acc.length - 1].date.isSame(entry.date) &&
-          acc[acc.length - 1].appId === entry.appId &&
-          acc[acc.length - 1].pid === entry.pid &&
-          acc[acc.length - 1].priority === entry.priority
-        ) {
-          acc[acc.length - 1].messages.push(...entry.messages);
-          return acc;
-        }
-        return [...acc, entry];
-      }, []);
+    const entries: Entry[] = [];
+
+    for (const line of messages) {
+      let rawEntry: RawEntryIOS;
+      try {
+        rawEntry = JSON.parse(line);
+      } catch (e) {
+        continue;
+      }
+
+      const entry = {
+        platform: 'ios' as import('../types').Platform,
+        ts: Date.parse(rawEntry.timestamp),
+        pid: rawEntry.processID,
+        priority: PriorityUtils.fromName(rawEntry.messageType),
+        tag: rawEntry.subsystem || undefined,
+        messages: [rawEntry.eventMessage],
+        processName: rawEntry.processImagePath
+          ? rawEntry.processImagePath.split('/').pop() || undefined
+          : undefined,
+        threadId: rawEntry.threadID,
+        subsystem: rawEntry.subsystem,
+        category: rawEntry.category,
+      };
+
+      entries.push(entry);
+    }
+
+    return entries;
   }
 }
