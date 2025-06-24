@@ -39,18 +39,21 @@ emitter.on('entry', (entry: Entry) => {
     priority: entry.priority,
     tag: entry.tag,
     message: entry.messages.join('\n'),
-    platform: entry.platform
+    platform: entry.platform,
   });
 });
 
 emitter.on('error', (error: Error) => {
   console.error('Logging error:', error.message);
 });
+
+// When you're done listening to logs, close the stream programmatically
+await emitter.close(); // or emitter.close(callback)
 ```
 
 ## API Reference
 
-### `logkitten(options: LogkittenOptions): EventEmitter`
+### `logkitten(options: LogkittenOptions): LogkittenEmitter`
 
 Spawns logkitten with given options:
 
@@ -60,10 +63,17 @@ Spawns logkitten with given options:
 * `priority?: number` - Minimum priority of entries to show of `undefined`, which will include all entries with priority **DEBUG** (Android)/**DEFAULT** (iOS) or above.
 * `filter?: (entry: Entry) => boolean` - Optional filter function that receives each log entry and returns true to include it or false to exclude it.
 
-When spawning logkitten you will get a instance of `EventEmitter` which emits the following events:
+When you call `logkitten()` you get a `LogkittenEmitter` (which extends Node's `EventEmitter`) exposing:
 
-* `entry` (arguments: `entry: Entry`) - Emitted when new log comes in, that matches the `filter` and `priority` options. Process the structured entry object for your analysis needs.
-* `error` (arguments: `error: Error`) - Emitted when the log can't be parsed into a entry or when the Logcat process emits an error.
+* **Events**
+  * `entry` (arguments: `entry: Entry`) – Emitted when a new log entry passes the built-in priority filter and your optional custom filter.
+  * `error` (arguments: `error: Error`) – Emitted when parsing fails or the underlying logging process writes to stderr.
+  * `close` – Emitted once the logging process is terminated via `.close()`.
+
+* **Methods**
+  * `close(cb?)` – Gracefully stops the underlying logging process, removes listeners and returns a Promise that resolves when everything is cleaned up. You can also supply a Node-style callback instead of awaiting the promise.
+
+The emitter will **automatically** be closed on Node process exit, but you can call `.close()` anytime you no longer need the logs or want to release system resources.
 
 ### Entry Structure
 

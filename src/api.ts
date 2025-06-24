@@ -1,5 +1,5 @@
 /* Common */
-import { EventEmitter } from 'events';
+import { LogkittenEmitter } from './emitter';
 import { Entry, Platform } from './types';
 
 /* Android */
@@ -26,9 +26,8 @@ export type LogkittenOptions = {
   filter?: (entry: Entry) => boolean;
 };
 
-export function logkitten(options: LogkittenOptions): EventEmitter {
+export function logkitten(options: LogkittenOptions): LogkittenEmitter {
   const { platform, adbPath, deviceId, priority, filter: userFilter } = options;
-  const emitter = new EventEmitter();
 
   if (
     !['ios', 'android'].some(
@@ -49,10 +48,8 @@ export function logkitten(options: LogkittenOptions): EventEmitter {
       ? runAndroidLoggingProcess(adbPath, deviceId)
       : runSimulatorLoggingProcess(deviceId);
 
-  process.on('exit', () => {
-    loggingProcess.kill();
-    emitter.emit('exit');
-  });
+  const emitter = new LogkittenEmitter(loggingProcess);
+  process.on('exit', () => emitter.close());
 
   loggingProcess.stderr?.on('data', (errorData: string | Buffer) => {
     if (platform === 'ios') {
