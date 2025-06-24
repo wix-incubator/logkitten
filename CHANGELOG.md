@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/wix-incubator/logkitten/compare/v1.1.1...v1.2.0) (2025-06-24)
+
+
+### Features
+
+* add .close() API ([48b64bd](https://github.com/wix-incubator/logkitten/commit/48b64bde619ab131ca6dce9a39819af915b08d15))
+
 ## [1.1.1](https://github.com/wix-incubator/logkitten/compare/v1.1.0...v1.1.1) (2025-06-20)
 
 
