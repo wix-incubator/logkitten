@@ -40,7 +40,7 @@ describe('Node API', () => {
         });
 
         setTimeout(() => {
-          expect(entriesEmitted).toBe(3);
+          expect(entriesEmitted).toBe(4);
           done();
         });
       });

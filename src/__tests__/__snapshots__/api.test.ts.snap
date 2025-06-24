@@ -7,9 +7,10 @@ exports[`Node API for Android should spawn logcat process and emit entries when 
   ],
   "pid": 935,
   "platform": "android",
-  "priority": 4,
+  "priority": 5,
   "tag": "wificond",
-  "ts": 1767225599000,
+  "threadId": 936,
+  "ts": 1741174905111,
 }
 `;
 
@@ -20,35 +21,38 @@ exports[`Node API for Android should spawn logcat process and emit entries when 
   ],
   "pid": 935,
   "platform": "android",
-  "priority": 2,
+  "priority": 3,
   "tag": "wificond",
-  "ts": 1767225600000,
+  "threadId": 937,
+  "ts": 1741174906222,
 }
 `;
 
 exports[`Node API for Android should spawn logcat process and emit entries when no filter is used 1`] = `
 {
   "messages": [
-    "getDiskStats failed with result NOT_SUPPORTED and size 0",
+    "GetBestInfo checking vdex next to the dex file (/data/user_de/0/com.google.android.gms/app_chimera/m/00000010/oat/arm64/dl-MlkitOcrCommon.optional_242335100400.vdex)",
   ],
-  "pid": 934,
+  "pid": 24167,
   "platform": "android",
-  "priority": 5,
-  "tag": "storaged",
-  "ts": 1767225593000,
+  "priority": 3,
+  "tag": "artd",
+  "threadId": 24171,
+  "ts": 1741174901701,
 }
 `;
 
 exports[`Node API for Android should spawn logcat process and emit entries when no filter is used 2`] = `
 {
   "messages": [
-    "uid=1000(system) ActivityManager expire 10 lines",
+    "getDiskStats failed with result NOT_SUPPORTED and size 0",
   ],
-  "pid": 1383,
+  "pid": 24167,
   "platform": "android",
-  "priority": 3,
-  "tag": "chatty",
-  "ts": 1767225594000,
+  "priority": 4,
+  "tag": "storaged",
+  "threadId": 24172,
+  "ts": 1741174902123,
 }
 `;
 
@@ -59,9 +63,24 @@ exports[`Node API for Android should spawn logcat process and emit entries when 
   ],
   "pid": 935,
   "platform": "android",
-  "priority": 4,
+  "priority": 5,
   "tag": "wificond",
-  "ts": 1767225599000,
+  "threadId": 936,
+  "ts": 1741174905111,
+}
+`;
+
+exports[`Node API for Android should spawn logcat process and emit entries when no filter is used 4`] = `
+{
+  "messages": [
+    "Scheduled scan is not running!",
+  ],
+  "pid": 935,
+  "platform": "android",
+  "priority": 3,
+  "tag": "wificond",
+  "threadId": 937,
+  "ts": 1741174906222,
 }
 `;
 
@@ -70,11 +89,12 @@ exports[`Node API for Android should spawn logcat process and emit entries when 
   "messages": [
     "getDiskStats failed with result NOT_SUPPORTED and size 0",
   ],
-  "pid": 934,
+  "pid": 24167,
   "platform": "android",
-  "priority": 5,
+  "priority": 4,
   "tag": "storaged",
-  "ts": 1767225593000,
+  "threadId": 24172,
+  "ts": 1741174902123,
 }
 `;
 
@@ -85,9 +105,10 @@ exports[`Node API for Android should spawn logcat process and emit entries when 
   ],
   "pid": 935,
   "platform": "android",
-  "priority": 4,
+  "priority": 5,
   "tag": "wificond",
-  "ts": 1767225599000,
+  "threadId": 936,
+  "ts": 1741174905111,
 }
 `;
 
@@ -98,9 +119,10 @@ exports[`Node API for Android should spawn logcat process and emit entries when 
   ],
   "pid": 935,
   "platform": "android",
-  "priority": 2,
+  "priority": 3,
   "tag": "wificond",
-  "ts": 1767225600000,
+  "threadId": 937,
+  "ts": 1741174906222,
 }
 `;
 

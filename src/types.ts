@@ -17,6 +17,7 @@ export type Entry = {
   platform: Platform;
   /** Process name */
   processName?: string;
+  /** Thread ID */
   threadId?: number;
   subsystem?: string;
   category?: string;

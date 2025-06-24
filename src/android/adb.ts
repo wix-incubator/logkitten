@@ -44,7 +44,7 @@ export function spawnLogcatProcess(
   try {
     return spawn(
       adbPath,
-      [...baseArgs, 'logcat', '-v', 'time', 'process', 'tag'],
+      [...baseArgs, 'logcat', '-v', 'epoch'],
       {
         stdio: 'pipe',
       }
