@@ -6,7 +6,7 @@
 
 Stream Android and iOS logs without Android Studio or Console.app, with programmatic Node.js API for log analysis.
 
-> This is a Wix fork of the original [logkitten](https://github.com/zamotany/logkitten) project.
+> This is a Wix Incubator fork of the original [logkitty](https://github.com/zamotany/logkitty) project.
 
 ## Installation
 
@@ -268,7 +268,7 @@ const emitter = logkitten({
 
 ## Credits
 
-This project is a fork and continuation of the original [logkitten](https://github.com/zamotany/logkitten) by [Paweł Trysła (@zamotany)](https://github.com/zamotany), maintained by Wix.
+This project is a fork and continuation of the original [logkitty](https://github.com/zamotany/logkitty) by [Paweł Trysła (@zamotany)](https://github.com/zamotany), maintained by Wix Incubator.
 
 The original project has been inactive since 2020, and this fork continues development with modern dependencies and bug fixes.
 While we maintain this fork primarily for our own use, we welcome community contributions and will consider issues and feature requests as time permits.
