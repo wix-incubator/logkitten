@@ -1,4 +1,4 @@
-# logkitten
+# <img src="logo.webp" alt="" align="right" height="48"> logkitten
 
 [![Version][version]][package]
 [![PRs Welcome][prs-welcome-badge]][prs-welcome]
