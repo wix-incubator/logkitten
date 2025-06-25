@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/wix-incubator/logkitten/compare/v1.2.0...v1.3.0) (2025-06-25)
+
+
+### Features
+
+* new parsing system ([cac1a07](https://github.com/wix-incubator/logkitten/commit/cac1a0762b7d005c6c90ab03ff4a6beaadbaca0b))
+
 # [1.2.0](https://github.com/wix-incubator/logkitten/compare/v1.1.1...v1.2.0) (2025-06-24)
 
 
