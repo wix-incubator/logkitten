@@ -25,16 +25,18 @@
   },
   "author": "Paweł Trysła <zamotany.oss@gmail.com>",
   "contributors": [
-    "Yaroslav Serhieiev <noomorph@gmail.com>"
+    "Yaroslav Serhieiev <yaroslavs@wix.com>"
   ],
   "bugs": {
     "url": "https://github.com/wix-incubator/logkitten/issues"
   },
   "homepage": "https://github.com/wix-incubator/logkitten",
   "license": "MIT",
-  "main": "build/api.js",
+  "main": "build/index.js",
   "files": [
-    "build"
+    "build",
+    "!__tests__",
+    "!*.test.*"
   ],
   "scripts": {
     "lint": "eslint --ext '.js,.ts' ./src",
@@ -42,10 +44,9 @@
     "build:def": "tsc --emitDeclarationOnly",
     "prepare": "yarn build:source && yarn build:def",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
-  },
-  "dependencies": {
-    "dayjs": "^1.8.22"
+    "test": "jest",
+    "demo:ios": "node scripts/demo-ios.js",
+    "demo:android": "node scripts/demo-android.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.0",
@@ -69,7 +70,9 @@
     "typescript": "~5.1.0"
   },
   "jest": {
-    "testRegex": "/__tests__/.*\\.(test|spec)\\.ts?$"
+    "testMatch": [
+      "<rootDir>/src/**/*.test.ts"
+    ]
   },
   "release": {
     "branches": [

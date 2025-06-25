@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`AndroidParser chunked input parses entries correctly with chunked input 1`] = `
+[
+  {
+    "level": 30,
+    "msg": "SELinux: Loaded service_contexts from:",
+    "pid": 1321,
+    "tag": "SELinux",
+    "tid": 1321,
+    "ts": 785,
+    "uid": "1000",
+  },
+  {
+    "level": 30,
+    "msg": "SELinux: Loaded service_contexts from:",
+    "pid": 1321,
+    "tag": "auditd",
+    "tid": 1321,
+    "ts": 785,
+    "uid": "1000",
+  },
+  {
+    "level": 20,
+    "msg": "[subtag=121035042,-1,]",
+    "pid": 125,
+    "tag": "snet_event_log",
+    "tid": 125,
+    "ts": 1750850005865,
+    "uid": "1000",
+  },
+  {
+    "level": 30,
+    "msg": "Using psi monitors for memory pressure detection",
+    "pid": 124,
+    "tag": "lowmemorykiller",
+    "tid": 124,
+    "ts": 1750850005871,
+    "uid": "lmkd",
+  },
+  {
+    "level": 10,
+    "msg": "Process polling is supported
+Process reaper initialized with 2 threads in the pool",
+    "pid": 124,
+    "tag": "lowmemorykiller",
+    "tid": 124,
+    "ts": 1750850005871,
+    "uid": "lmkd",
+  },
+  {
+    "level": 20,
+    "msg": "avc=SELinux: Loaded service context from:
+avc=		/system/etc/selinux/plat_service_contexts
+avc=		/system_ext/etc/selinux/system_ext_service_contexts
+avc=		/vendor/etc/selinux/vendor_service_contexts",
+    "pid": 125,
+    "tag": "auditd",
+    "tid": 125,
+    "ts": 1750850005872,
+    "uid": "1000",
+  },
+  {
+    "level": 30,
+    "msg": "successfully set property 'vendor.qemu.sf.fake_camera' to 'front'
+successfully set property 'qemu.hw.mainkeys' to '0'
+successfully set property 'qemu.sf.lcd_density' to '420'",
+    "pid": 127,
+    "tag": "qemu-props",
+    "tid": 127,
+    "ts": 1750850005874,
+    "uid": "root",
+  },
+]
+`;
