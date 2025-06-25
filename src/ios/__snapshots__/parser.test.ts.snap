@@ -1,0 +1,54 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`IosParser chunked input parses entries correctly with chunked input 1`] = `
+[
+  {
+    "category": "Summary",
+    "formatString": "Task <%{public,uuid_t}.16P>.<%lu> summary for %{public}s {transaction_duration_ms=%u, response_status=%ld, connection=%llu, reused=1, reused_after_ms=%u, request_start_ms=%u, request_duration_ms=%u, response_start_ms=%u, response_duration_ms=%u, request_bytes=%lld, request_throughput_kbps=%lld, response_bytes=%lld, response_throughput_kbps=%lld, cache_hit=%{bool}d}",
+    "level": 30,
+    "msg": "Task <96F5582A-8C99-4035-AEC1-29C47714BAD5>.<2408> summary for task failure {transaction_duration_ms=12, response_status=-1, connection=2408, reused=1, reused_after_ms=0, request_start_ms=0, request_duration_ms=0, response_start_ms=0, response_duration_ms=0, request_bytes=0, request_throughput_kbps=0, response_bytes=0, response_throughput_kbps=0, cache_hit=false}",
+    "pid": 87578,
+    "processImagePath": "/Users/yaroslavs/Library/Developer/CoreSimulator/Devices/1C62AC87-73A4-4576-B440-DCE6F2A17B80/data/Containers/Bundle/Application/CEA9E514-252D-4EE2-9BA8-2E49AE389879/example.app/example",
+    "subsystem": "com.apple.CFNetwork",
+    "tid": 154653588,
+    "ts": 1750764754176,
+    "userID": 501,
+  },
+  {
+    "category": "connection",
+    "formatString": "[C%u %{public}s %{public}@] dealloc",
+    "level": 20,
+    "msg": "[C2430 Hostname#65c1aeb9:63995 tcp, url: http://localhost:63995/, definite, attribution: developer] dealloc",
+    "pid": 87578,
+    "processImagePath": "/Users/yaroslavs/Library/Developer/CoreSimulator/Devices/1C62AC87-73A4-4576-B440-DCE6F2A17B80/data/Containers/Bundle/Application/CEA9E514-252D-4EE2-9BA8-2E49AE389879/example.app/example",
+    "subsystem": "com.apple.network",
+    "tid": 154652000,
+    "ts": 1750764777470,
+    "userID": 501,
+  },
+  {
+    "category": "connection",
+    "formatString": "%{public}s %s Socket SO_ERROR %{darwin.errno}d",
+    "level": 50,
+    "msg": "nw_socket_handle_socket_event [C3103.1.1:2] Socket SO_ERROR [61: Connection refused]",
+    "pid": 87578,
+    "processImagePath": "/Users/yaroslavs/Library/Developer/CoreSimulator/Devices/1C62AC87-73A4-4576-B440-DCE6F2A17B80/data/Containers/Bundle/Application/CEA9E514-252D-4EE2-9BA8-2E49AE389879/example.app/example",
+    "subsystem": "com.apple.network",
+    "tid": 154652000,
+    "ts": 1750765489382,
+    "userID": 501,
+  },
+  {
+    "category": "activity",
+    "formatString": "No threshold for %{public}s, returning NW_ACTIVITY_DURATION_INVALID",
+    "level": 10,
+    "msg": "No threshold for cfnetwork:foreground_task, returning NW_ACTIVITY_DURATION_INVALID",
+    "pid": 87578,
+    "processImagePath": "/Users/yaroslavs/Library/Developer/CoreSimulator/Devices/1C62AC87-73A4-4576-B440-DCE6F2A17B80/data/Containers/Bundle/Application/CEA9E514-252D-4EE2-9BA8-2E49AE389879/example.app/example",
+    "subsystem": "com.apple.network",
+    "tid": 154652005,
+    "ts": 1750764801817,
+    "userID": 501,
+  },
+]
+`;

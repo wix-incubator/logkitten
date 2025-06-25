@@ -1,103 +1,94 @@
 /* Common */
 import { LogkittenEmitter } from './emitter';
-import { Entry, Platform } from './types';
+import { Emitter, Entry, Options } from './types';
 
-/* Android */
-import createAndroidFilter from './android/AndroidFilter';
-import AndroidParser from './android/AndroidParser';
-import { runAndroidLoggingProcess } from './android/adb';
-export { Priority as AndroidPriority } from './android/constants';
+import {
+  create as android,
+  type AndroidEntry,
+  type AndroidOptions,
+} from './android';
+import { create as ios, type IosEntry, type IosOptions } from './ios';
+import { AliasedIosOptions } from './ios/types';
+import { AliasedAndroidOptions } from './android/types';
 
-/* iOS */
-import IosParser from './ios/IosParser';
-import createIosFilter from './ios/IosFilter';
-import { runSimulatorLoggingProcess } from './ios/simulator';
-import { CodeError, ERR_IOS_NO_SIMULATORS_BOOTED } from './errors';
-export { Priority as IosPriority } from './ios/constants';
+const alwaysTrue = () => true;
 
-/* Exports */
-export { Entry } from './types';
+export { Level } from './constants';
 
-export type LogkittenOptions = {
-  platform: Platform;
-  adbPath?: string;
-  deviceId?: string;
-  priority?: number;
-  filter?: (entry: Entry) => boolean;
-};
+export function logkittenCustom<E extends Entry, O>(
+  options: O & Options<E>
+): Emitter<E> {
+  const driver = options.platform(options);
+  const userFilter = options.filter || alwaysTrue;
+  const platformFilter = driver.filter || alwaysTrue;
 
-export function logkitten(options: LogkittenOptions): LogkittenEmitter {
-  const { platform, adbPath, deviceId, priority, filter: userFilter } = options;
-
-  if (
-    !['ios', 'android'].some(
-      (availablePlatform) => availablePlatform === platform
-    )
-  ) {
-    throw new Error(`Platform ${platform} is not supported`);
-  }
-
-  const parser = platform === 'android' ? new AndroidParser() : new IosParser();
-  const baseFilter =
-    platform === 'android'
-      ? createAndroidFilter(priority)
-      : createIosFilter(priority);
-
-  const loggingProcess =
-    platform === 'android'
-      ? runAndroidLoggingProcess(adbPath, deviceId)
-      : runSimulatorLoggingProcess(deviceId);
-
+  const loggingProcess = driver.process;
   const emitter = new LogkittenEmitter(loggingProcess);
-  process.on('exit', () => emitter.close());
 
-  loggingProcess.stderr?.on('data', (errorData: string | Buffer) => {
-    if (platform === 'ios') {
-      const msg = errorData.toString();
+  function handleData(raw: string | Buffer, stderr: boolean) {
+    let entries: E[] | undefined;
 
-      if (msg.includes('getpwuid_r did not find a match for uid')) {
-        return;
-      }
-
-      if (msg.includes('No devices are booted.')) {
-        emitter.emit(
-          'error',
-          new CodeError(
-            ERR_IOS_NO_SIMULATORS_BOOTED,
-            'No simulators are booted.'
-          )
-        );
-        return;
-      }
-    }
-
-    emitter.emit('error', new Error(errorData.toString()));
-  });
-
-  loggingProcess.stdout?.on('data', (raw: string | Buffer) => {
-    let entryToLog: Entry | undefined;
     try {
-      const messages = parser.splitMessages(raw.toString());
-      const entries = parser.parseMessages(messages);
-      entries.forEach((entry: Entry) => {
-        // Apply base priority filter and optional user filter
-        if (baseFilter(entry) && (!userFilter || userFilter(entry))) {
-          entryToLog = entry;
-        }
-      });
+      entries = driver.parse(raw, stderr);
     } catch (error) {
       emitter.emit('error', error);
     }
 
-    if (entryToLog) {
-      emitter.emit('entry', entryToLog);
+    if (entries) {
+      for (const entry of entries) {
+        if (platformFilter(entry) && userFilter(entry)) {
+          emitter.emit('entry', entry);
+        }
+      }
     }
-  });
+  }
 
-  loggingProcess.stdout?.on('error', (error: Error) => {
+  function handleError(error: Error) {
     emitter.emit('error', error);
-    emitter.emit('exit');
-  });
+    emitter.close();
+  }
+
+  loggingProcess.on('error', handleError);
+  loggingProcess.stdout?.on('error', handleError);
+  loggingProcess.stderr?.on('error', handleError);
+  loggingProcess.stderr?.on('data', (data) => handleData(data, true));
+  loggingProcess.stdout?.on('data', (data) => handleData(data, false));
 
   return emitter;
+}
+
+export function logkitten(
+  options: AliasedAndroidOptions
+): Emitter<AndroidEntry>;
+// eslint-disable-next-line no-redeclare
+export function logkitten(options: AliasedIosOptions): Emitter<IosEntry>;
+// eslint-disable-next-line no-redeclare
+export function logkitten(
+  options: AliasedAndroidOptions | AliasedIosOptions
+): Emitter<AndroidEntry | IosEntry> {
+  const { platform } = options;
+
+  if (platform === 'android') {
+    return logkittenAndroid(options);
+  } else if (platform === 'ios') {
+    return logkittenIOS(options);
+  } else {
+    throw new Error(`Platform ${platform} is not supported`);
+  }
+}
+
+export function logkittenIOS(options: Omit<AliasedIosOptions, 'platform'>) {
+  return logkittenCustom<IosEntry, IosOptions>({
+    ...options,
+    platform: ios,
+  });
+}
+
+export function logkittenAndroid(
+  options: Omit<AliasedAndroidOptions, 'platform'>
+) {
+  return logkittenCustom<AndroidEntry, AndroidOptions>({
+    ...options,
+    platform: android,
+  });
 }

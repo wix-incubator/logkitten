@@ -19,27 +19,21 @@ yarn add logkitten
 ## Usage
 
 ```ts
-import {
-  logkitten,
-  AndroidPriority,
-  IosPriority,
-  Entry,
-} from 'logkitten';
+import { logkitten, Level } from 'logkitten';
 
 // Basic usage - get all Android logs
 const emitter = logkitten({
   platform: 'android',
-  priority: AndroidPriority.DEBUG,
 });
 
-emitter.on('entry', (entry: Entry) => {
+emitter.on('entry', (entry) => {
   // Process the structured log entry
   console.log({
-    timestamp: entry.date.format(),
-    priority: entry.priority,
-    tag: entry.tag,
-    message: entry.messages.join('\n'),
-    platform: entry.platform,
+    ts: new Date(entry.ts),
+    level: entry.level,
+    pid: entry.pid,
+    tid: entry.tid,
+    message: entry.msg,
   });
 });
 
@@ -53,42 +47,85 @@ await emitter.close(); // or emitter.close(callback)
 
 ## API Reference
 
-### `logkitten(options: LogkittenOptions): LogkittenEmitter`
+### Main Function
 
-Spawns logkitten with given options:
+#### `logkitten(options)`
 
-* `platform: 'android' | 'ios'` - Platform to get the logs from: uses `adb logcat` for Android and `xcrun simctl` + `log` for iOS simulator.
-* `adbPath?: string` - Custom path to adb tool or `undefined` (used only when `platform` is `android`).
-* `deviceId?: string` - Specific device to target. For Android, this is the device serial number used with `adb -s`. For iOS, this is the simulator UDID used with `xcrun simctl`. If not provided, defaults to the current device (Android) or `booted` simulator (iOS).
-* `priority?: number` - Minimum priority of entries to show of `undefined`, which will include all entries with priority **DEBUG** (Android)/**DEFAULT** (iOS) or above.
-* `filter?: (entry: Entry) => boolean` - Optional filter function that receives each log entry and returns true to include it or false to exclude it.
+The main function that accepts platform-specific options:
 
-When you call `logkitten()` you get a `LogkittenEmitter` (which extends Node's `EventEmitter`) exposing:
+```ts
+// Android
+const androidEmitter = logkitten({
+  platform: 'android',
+  // Optional: specify custom adb path
+  adbPath: '/custom/path/to/adb',
+  // Optional: target specific device
+  deviceId: 'emulator-5554',
+  // Optional: filter entries
+  filter: (entry) => entry.tag === 'MyApp'
+});
 
-* **Events**
-  * `entry` (arguments: `entry: Entry`) – Emitted when a new log entry passes the built-in priority filter and your optional custom filter.
-  * `error` (arguments: `error: Error`) – Emitted when parsing fails or the underlying logging process writes to stderr.
-  * `close` – Emitted once the logging process is terminated via `.close()`.
-
-* **Methods**
-  * `close(cb?)` – Gracefully stops the underlying logging process, removes listeners and returns a Promise that resolves when everything is cleaned up. You can also supply a Node-style callback instead of awaiting the promise.
-
-The emitter will **automatically** be closed on Node process exit, but you can call `.close()` anytime you no longer need the logs or want to release system resources.
+// iOS
+const iosEmitter = logkitten({
+  platform: 'ios',
+  // Optional: target specific simulator (defaults to 'booted')
+  deviceId: 'A1B2C3D4-E5F6-7890-ABCD-EF1234567890',
+  // Optional: filter entries
+  filter: (entry) => entry.processImagePath.includes('/MyApp')
+});
+```
 
 ### Entry Structure
 
-Each log entry is a structured object:
+Each log entry is a structured object with platform-specific extensions:
 
 ```ts
 interface Entry {
-  date: Dayjs;           // Parsed timestamp
-  pid: number;           // Process ID
-  priority: number;      // Log priority/level
-  tag: string;           // Log tag
-  appId?: string;        // App identifier (Android)
-  messages: string[];    // Log message lines
-  platform: 'android' | 'ios';
+  msg: string;           // Message content
+  ts: number;           // Timestamp in milliseconds
+  pid: number;          // Process ID
+  tid: number;          // Thread ID
+  level: number;        // Log level/priority (Level enum)
 }
+
+interface AndroidEntry extends Entry {
+  tag: string;          // Log tag
+  uid: string;          // User ID
+}
+
+interface IosEntry extends Entry {
+  category: string;           // iOS category
+  formatString: string;       // Format string used for the log message
+  processImagePath: string;   // Path to the process executable
+  subsystem: string;          // iOS subsystem
+  userID: number;            // User ID
+}
+```
+
+### LogkittenEmitter
+
+The emitter returned by all functions extends Node's `EventEmitter` and provides:
+
+* **Events**
+  * `entry` (arguments: `entry: AndroidEntry | IosEntry`) – Emitted when a new log entry passes filters.
+  * `error` (arguments: `error: Error`) – Emitted when parsing fails or the underlying process encounters errors.
+  * `close` – Emitted once the logging process is terminated via `.close()`.
+
+* **Methods**
+  * `close(cb?)` – Gracefully stops the underlying logging process and returns a Promise that resolves when cleanup is complete.
+
+## Levels
+
+```ts
+import { Level } from 'logkitten';
+
+// Available priorities (from lowest to highest):
+Level.TRACE    // 10 - Trace level (Android verbose)
+Level.DEBUG    // 20 - Debug level
+Level.INFO     // 30 - Info level
+Level.WARN     // 40 - Warning level
+Level.ERROR    // 50 - Error level
+Level.FATAL    // 60 - Fatal level
 ```
 
 ## Filtering
@@ -98,7 +135,6 @@ You can provide a custom filter function to control which log entries are emitte
 ```ts
 const emitter = logkitten({
   platform: 'android',
-  priority: AndroidPriority.INFO,
   filter: (entry) => {
     // Only include entries with specific tags
     return entry.tag === 'MyApp' || entry.tag === 'ReactNative';
@@ -108,77 +144,54 @@ const emitter = logkitten({
 
 ### Filter Examples
 
-**Filter by tag:**
+**Filter by tag (Android):**
+
 ```ts
-filter: (entry) => entry.tag === 'MyApp'
+(entry) => entry.tag === 'MyApp'
 ```
 
-**Filter by app (Android only):**
+**Filter by process (both platforms):**
+
 ```ts
-filter: (entry) => entry.pid === myAppPid
+(entry) => entry.pid === myAppPid
 ```
 
 **Filter by message content:**
+
 ```ts
-filter: (entry) => entry.messages.some(msg => /error|warning/i.test(msg))
+filter: (entry) => /error|warning/i.test(entry.msg)
 ```
 
-**Complex filtering:**
+**Filter by subsystem (iOS):**
+
 ```ts
-filter: (entry) => {
-  const isMyApp = entry.tag === 'MyApp';
-  const isError = entry.priority >= AndroidPriority.ERROR;
-  const hasKeyword = entry.messages.some(msg => msg.includes('network'));
+filter: (entry) => entry.subsystem === 'com.mycompany.myapp'
+```
+
+**Multi-criteria filtering:**
+
+```ts
+(entry) => {
+  const isMyApp = entry.tag === 'MyApp' || entry.processImagePath?.includes('MyApp');
+  const isError = entry.level >= Level.ERROR;
+  const hasKeyword = entry.msg.includes('network');
   return isMyApp && (isError || hasKeyword);
 }
 ```
 
-## Priority Levels
-
-### Android Priorities
-
-```ts
-import { AndroidPriority } from 'logkitten';
-
-// Available priorities (from lowest to highest):
-AndroidPriority.UNKNOWN  // Unknown priority
-AndroidPriority.VERBOSE  // Verbose priority
-AndroidPriority.DEBUG    // Debug priority (default)
-AndroidPriority.INFO     // Info priority
-AndroidPriority.WARN     // Warn priority
-AndroidPriority.ERROR    // Error priority
-AndroidPriority.FATAL    // Fatal priority
-AndroidPriority.SILENT   // Silent priority
-```
-
-### iOS Priorities
-
-```ts
-import { IosPriority } from 'logkitten';
-
-// Available priorities:
-IosPriority.DEFAULT  // Default level
-IosPriority.DEBUG    // Debug level
-IosPriority.INFO     // Info level
-IosPriority.ERROR    // Error level
-```
-
 ## Examples
 
-### Log Analysis
+### Log Analysis and Error Tracking
 
 ```ts
-import { logkitten, AndroidPriority } from 'logkitten';
-
 const emitter = logkitten({
   platform: 'android',
-  priority: AndroidPriority.INFO,
 });
 
 const errorCount = new Map();
 
 emitter.on('entry', (entry) => {
-  if (entry.priority >= AndroidPriority.ERROR) {
+  if (entry.level >= Level.ERROR) {
     const count = errorCount.get(entry.tag) || 0;
     errorCount.set(entry.tag, count + 1);
   }
@@ -190,15 +203,12 @@ setInterval(() => {
 }, 10000);
 ```
 
-### Filtering and Processing
+### Structured Log Storage
 
 ```ts
-import { logkitten, IosPriority } from 'logkitten';
-
 const emitter = logkitten({
   platform: 'ios',
-  priority: IosPriority.DEBUG,
-  filter: (entry) => entry.tag === 'MyApp',
+  filter: (entry) => entry.processImagePath.includes('/MyApp'),
 });
 
 const logs = [];
@@ -206,72 +216,15 @@ const logs = [];
 emitter.on('entry', (entry) => {
   // Store structured log data
   logs.push({
-    timestamp: entry.date.unix(),
-    level: entry.priority,
-    source: entry.tag,
-    content: entry.messages.join(' '),
+    timestamp: entry.ts,
+    level: entry.level,
+    source: entry.subsystem,
+    content: entry.msg,
   });
 
   // Keep only last 1000 entries
   if (logs.length > 1000) {
     logs.shift();
-  }
-});
-```
-
-### Custom ADB path (Android)
-
-```ts
-import { logkitten, AndroidPriority } from 'logkitten';
-
-const emitter = logkitten({
-  platform: 'android',
-  adbPath: '/custom/path/to/adb',
-  priority: AndroidPriority.DEBUG,
-});
-```
-
-### Specific Device Selection
-
-**Android with specific device:**
-```ts
-import { logkitten, AndroidPriority } from 'logkitten';
-
-const emitter = logkitten({
-  platform: 'android',
-  deviceId: 'emulator-5554', // or device serial like 'R58M123456X'
-  priority: AndroidPriority.DEBUG,
-});
-```
-
-**iOS with specific simulator:**
-```ts
-import { logkitten, IosPriority } from 'logkitten';
-
-const emitter = logkitten({
-  platform: 'ios',
-  deviceId: 'A1B2C3D4-E5F6-7890-ABCD-EF1234567890', // simulator UDID
-  priority: IosPriority.DEBUG,
-});
-```
-
-### Advanced Filtering
-
-```ts
-import { logkitten, AndroidPriority } from 'logkitten';
-
-const emitter = logkitten({
-  platform: 'android',
-  priority: AndroidPriority.VERBOSE,
-  filter: (entry) => {
-    // Multi-criteria filtering
-    const isReactNative = entry.tag?.includes('ReactNative');
-    const isMyApp = entry.tag === 'MyApp';
-    const hasError = entry.messages.some(msg => /error|exception/i.test(msg));
-    const isHighPriority = entry.priority >= AndroidPriority.WARN;
-
-    // Include if it's from my app components OR if it's a high priority message with errors
-    return (isReactNative || isMyApp) || (isHighPriority && hasError);
   }
 });
 ```

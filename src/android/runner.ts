@@ -1,15 +1,13 @@
-import { spawn, execFileSync, ChildProcess } from 'child_process';
+import { ChildProcess, execFileSync, spawn } from 'child_process';
 import path from 'path';
 import {
   CodeError,
   ERR_ANDROID_CANNOT_CLEAN_LOGCAT_BUFFER,
   ERR_ANDROID_CANNOT_START_LOGCAT,
 } from '../errors';
+import type { AndroidOptions } from './types';
 
-export function runAndroidLoggingProcess(
-  adbPath?: string,
-  deviceId?: string
-): ChildProcess {
+export function run({ adbPath, deviceId }: AndroidOptions): ChildProcess {
   const execPath = getAdbPath(adbPath);
   return spawnLogcatProcess(execPath, deviceId);
 }
@@ -44,7 +42,12 @@ export function spawnLogcatProcess(
   try {
     return spawn(
       adbPath,
-      [...baseArgs, 'logcat', '-v', 'time', 'process', 'tag'],
+      [
+        ...baseArgs,
+        'logcat',
+        '-v',
+        'epoch,uid,threadtime,usec,printable,year,zone',
+      ],
       {
         stdio: 'pipe',
       }
