@@ -22,6 +22,7 @@ export class LogkittenEmitter<E extends Entry = Entry>
   /**
    * Closes the logging process and emits 'close'.
    * Supports both callback and Promise API.
+   * Implements timeout-based killing: first tries normal kill, then SIGKILL after 2 seconds.
    */
   close(cb?: (err?: Error) => void): Promise<void> {
     if (this._closePromise) {
@@ -31,7 +32,14 @@ export class LogkittenEmitter<E extends Entry = Entry>
     }
 
     this._closePromise = new Promise((resolve, reject) => {
+      let killTimeout: NodeJS.Timeout | null = null;
+
       const onExit = () => {
+        if (killTimeout) {
+          clearTimeout(killTimeout);
+          killTimeout = null;
+        }
+
         this.emit('close');
         if (cb) cb();
         resolve();
@@ -51,6 +59,14 @@ export class LogkittenEmitter<E extends Entry = Entry>
         } else {
           this._loggingProcess.on('exit', onExit);
           this._loggingProcess.kill();
+          // Set up timeout for SIGKILL after 2 seconds
+          killTimeout = setTimeout(() => {
+            try {
+              this._loggingProcess.kill('SIGKILL');
+            } catch (killErr) {
+              reject(killErr as Error);
+            }
+          }, 2000);
         }
       } catch (err) {
         if (cb) cb(err as Error);
