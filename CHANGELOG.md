@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/wix-incubator/logkitten/compare/v1.3.0...v1.3.1) (2025-09-24)
+
+
+### Bug Fixes
+
+* more robust close strategy ([#7](https://github.com/wix-incubator/logkitten/issues/7)) ([04a8059](https://github.com/wix-incubator/logkitten/commit/04a80599757dbb549879b495445b28d297b4ebbe))
+
 # [1.3.0](https://github.com/wix-incubator/logkitten/compare/v1.2.0...v1.3.0) (2025-06-25)
 
 
