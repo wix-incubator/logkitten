@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/wix-incubator/logkitten/compare/v1.3.1...v1.3.2) (2025-09-25)
+
+
+### Bug Fixes
+
+* **ios:** ignore all getpwuid_r errors ([ae83edb](https://github.com/wix-incubator/logkitten/commit/ae83edb31f688ca4801c589af4e85cbb01569a56))
+
 ## [1.3.1](https://github.com/wix-incubator/logkitten/compare/v1.3.0...v1.3.1) (2025-09-24)
 
 
