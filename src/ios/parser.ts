@@ -3,6 +3,8 @@ import { Parser } from '../types';
 import type { IosEntry, RawEntryIOS } from './types';
 import { PriorityUtils } from './utils';
 
+const IGNORED_STDERR_PATTERN = /\bgetpwuid_r\b/;
+
 export class IosParser {
   private _buffer = new LineBuffer();
 
@@ -55,7 +57,7 @@ export class IosParser {
       throw new Error('No simulators are booted.');
     }
 
-    if (line.includes('getpwuid_r did not find a match for uid')) {
+    if (IGNORED_STDERR_PATTERN.test(line)) {
       return [];
     }
 
