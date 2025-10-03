@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/wix-incubator/logkitten/compare/v1.3.2...v1.3.3) (2025-10-03)
+
+
+### Bug Fixes
+
+* **ios:** add placeholders for missing fields ([b4fad3f](https://github.com/wix-incubator/logkitten/commit/b4fad3f4a80df3b5b95f77acf7b3d92a2a1d8823))
+
 ## [1.3.2](https://github.com/wix-incubator/logkitten/compare/v1.3.1...v1.3.2) (2025-09-25)
 
 
