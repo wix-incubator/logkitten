@@ -36,16 +36,16 @@ export class IosParser {
     }
 
     const entry: IosEntry = {
-      msg: rawEntry.eventMessage,
+      msg: rawEntry.eventMessage || '',
       ts: Date.parse(rawEntry.timestamp),
       pid: rawEntry.processID,
       tid: rawEntry.threadID,
       level: PriorityUtils.fromName(rawEntry.messageType),
       // Platform specific fields
-      category: rawEntry.category,
-      formatString: rawEntry.formatString,
-      processImagePath: rawEntry.processImagePath,
-      subsystem: rawEntry.subsystem,
+      category: rawEntry.category || '',
+      formatString: rawEntry.formatString || '',
+      processImagePath: rawEntry.processImagePath || '',
+      subsystem: rawEntry.subsystem || '',
       userID: rawEntry.userID,
     };
 

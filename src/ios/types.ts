@@ -20,36 +20,37 @@ export interface AliasedIosOptions extends IosOptions {
 }
 
 export interface RawEntryIOS {
-  timezoneName: string;
+  timezoneName?: string;
   messageType: string;
-  eventType: string;
-  source: any;
-  formatString: string;
+  eventType?: string;
+  source?: any;
+  formatString?: string;
   userID: number;
-  activityIdentifier: number;
-  subsystem: string;
-  category: string;
+  activityIdentifier?: number;
+  subsystem?: string;
+  category?: string;
   threadID: number;
-  senderImageUUID: string;
-  backtrace: RawEntryIOS$Backtrace;
-  bootUUID: string;
-  processImagePath: string;
-  senderImagePath: string;
+  senderImageUUID?: string;
+  backtrace?: RawEntryIOS$Backtrace;
+  bootUUID?: string;
+  processImagePath?: string;
+  senderImagePath?: string;
   timestamp: string;
-  machTimestamp: number;
-  eventMessage: string;
-  processImageUUID: string;
-  traceID: number;
+  machTimestamp?: number;
+  eventMessage?: string;
+  processImageUUID?: string;
+  traceID?: number;
   processID: number;
-  senderProgramCounter: number;
-  parentActivityIdentifier: number;
+  senderProgramCounter?: number;
+  parentActivityIdentifier?: number;
+  creatorActivityID?: number;
 }
 
 export interface RawEntryIOS$Backtrace {
-  frames: RawEntryIOS$Frame[];
+  frames?: RawEntryIOS$Frame[];
 }
 
 export interface RawEntryIOS$Frame {
-  imageOffset: number;
-  imageUUID: string;
+  imageOffset?: number;
+  imageUUID?: string;
 }
